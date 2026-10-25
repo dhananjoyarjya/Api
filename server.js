@@ -126,8 +126,7 @@ messageText = "[Document message]";
 } else if (message.type === "location") {
 messageText = "[Location message]";
 } else {
-messageText = "[${message.type || "Unknown"} message]";
-}
+messageText = `[${message.type || "Unknown"} message]`;
 
 const contactName = contact?.profile?.name || phone;
 
