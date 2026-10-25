@@ -418,5 +418,4 @@ app.use((error, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`WhatsApp Inbox backend listening on port ${PORT}`);
-});end listening on port ${PORT}`);
 });
