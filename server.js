@@ -3,13 +3,14 @@ const admin = require("firebase-admin");
 const path = require("path");
 
 const app = express();
-app.use(express.json());
-
 const PORT = process.env.PORT || 3000;
+
+app.use(express.json({ limit: "1mb" }));
+
+// -------------------- FIREBASE SETUP --------------------
 
 let db = null;
 
-// Initialize Firebase using the service account stored securely in Render.
 try {
 const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 
@@ -23,37 +24,33 @@ if (!admin.apps.length) {
 }
 
 db = admin.firestore();
-console.log("Firebase connected");
+console.log("Firebase initialized");
 
 } else {
-console.warn("FIREBASE_SERVICE_ACCOUNT_JSON is not configured");
+console.warn("FIREBASE_SERVICE_ACCOUNT_JSON is missing");
 }
 } catch (error) {
 console.error("Firebase initialization failed:", error.message);
 }
 
+// -------------------- WHATSAPP SETTINGS --------------------
+
 const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN;
 
-function requireDatabase(res) {
-if (!db) {
-res.status(503).json({
-error: "Firebase is not configured on the server"
-});
-return false;
-}
-return true;
-}
+const GRAPH_API_VERSION = "v23.0";
 
-// Serve the inbox website.
+// -------------------- FRONTEND --------------------
+
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
 res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Health check.
+// -------------------- HEALTH CHECK --------------------
+
 app.get("/health", (req, res) => {
 res.json({
 ok: true,
@@ -61,7 +58,8 @@ service: "WhatsApp Inbox backend"
 });
 });
 
-// Frontend connection status.
+// -------------------- STATUS --------------------
+
 app.get("/api/status", (req, res) => {
 res.json({
 firebaseReady: Boolean(db),
@@ -69,7 +67,8 @@ whatsappConfigured: Boolean(WHATSAPP_TOKEN && PHONE_NUMBER_ID)
 });
 });
 
-// Meta webhook verification.
+// -------------------- WEBHOOK VERIFICATION --------------------
+
 app.get("/webhook", (req, res) => {
 const mode = req.query["hub.mode"];
 const token = req.query["hub.verify_token"];
@@ -78,7 +77,8 @@ const challenge = req.query["hub.challenge"];
 if (
 mode === "subscribe" &&
 VERIFY_TOKEN &&
-token === VERIFY_TOKEN
+token === VERIFY_TOKEN &&
+challenge
 ) {
 return res.status(200).send(challenge);
 }
@@ -86,15 +86,23 @@ return res.status(200).send(challenge);
 return res.sendStatus(403);
 });
 
-// Save an incoming WhatsApp message to Firestore.
+// -------------------- SAVE INCOMING MESSAGE --------------------
+
 async function saveIncomingMessage(message, contact) {
-if (!db || !message || !message.from) return;
+if (!db || !message || !message.from) {
+return;
+}
 
 const phone = String(message.from);
+
 const chatRef = db.collection("chats").doc(phone);
-const messageRef = chatRef.collection("messages").doc(
-String(message.id || "${Date.now()}_${Math.random()}")
-);
+
+const generatedId = "${Date.now()}_${Math.random()}";
+const messageId = String(message.id || generatedId);
+
+const messageRef = chatRef
+.collection("messages")
+.doc(messageId);
 
 let messageText = "";
 
@@ -107,12 +115,21 @@ messageText =
 message.interactive?.button_reply?.title ||
 message.interactive?.list_reply?.title ||
 "[Interactive message]";
+} else if (message.type === "image") {
+messageText = "[Image message]";
+} else if (message.type === "video") {
+messageText = "[Video message]";
+} else if (message.type === "audio") {
+messageText = "[Audio message]";
+} else if (message.type === "document") {
+messageText = "[Document message]";
+} else if (message.type === "location") {
+messageText = "[Location message]";
 } else {
 messageText = "[${message.type || "Unknown"} message]";
 }
 
-const contactName =
-contact?.profile?.name || phone;
+const contactName = contact?.profile?.name || phone;
 
 const timestamp = message.timestamp
 ? new Date(Number(message.timestamp) * 1000).toISOString()
@@ -120,7 +137,10 @@ const timestamp = message.timestamp
 
 await db.runTransaction(async transaction => {
 const chatSnapshot = await transaction.get(chatRef);
-const oldChat = chatSnapshot.exists ? chatSnapshot.data() : {};
+
+const oldChat = chatSnapshot.exists
+  ? chatSnapshot.data()
+  : {};
 
 transaction.set(chatRef, {
   phone,
@@ -132,7 +152,7 @@ transaction.set(chatRef, {
 }, { merge: true });
 
 transaction.set(messageRef, {
-  id: String(message.id || ""),
+  id: messageId,
   phone,
   text: messageText,
   type: message.type || "unknown",
@@ -144,31 +164,33 @@ transaction.set(messageRef, {
 });
 }
 
-// Receive WhatsApp webhook events.
-// Return HTTP 200 quickly so Meta does not repeatedly retry the event.
+// -------------------- RECEIVE WEBHOOK EVENTS --------------------
+
 app.post("/webhook", (req, res) => {
+// Acknowledge Meta's webhook request immediately.
 res.sendStatus(200);
 
 (async () => {
 try {
 const body = req.body;
 
-  if (body?.object !== "whatsapp_business_account") return;
+  if (body?.object !== "whatsapp_business_account") {
+    return;
+  }
 
   for (const entry of body.entry || []) {
     for (const change of entry.changes || []) {
-      const value = change.value || [];
+      const value = change.value || {};
       const contacts = value.contacts || [];
+      const messages = value.messages || [];
 
-      for (const message of value.messages || []) {
+      for (const message of messages) {
         const contact = contacts.find(
           item => item.wa_id === message.from
         );
 
         await saveIncomingMessage(message, contact);
       }
-
-      // Delivery/read statuses can be stored later if needed.
     }
   }
 } catch (error) {
@@ -178,9 +200,14 @@ const body = req.body;
 })();
 });
 
-// List conversations.
+// -------------------- LIST CHATS --------------------
+
 app.get("/api/chats", async (req, res) => {
-if (!requireDatabase(res)) return;
+if (!db) {
+return res.status(503).json({
+error: "Firebase is not configured on the server"
+});
+}
 
 try {
 const snapshot = await db.collection("chats")
@@ -193,56 +220,82 @@ const chats = snapshot.docs.map(doc => ({
   ...doc.data()
 }));
 
-res.json(chats);
+return res.json(chats);
 
 } catch (error) {
 console.error("Loading chats failed:", error.message);
-res.status(500).json({ error: "Could not load conversations" });
+
+return res.status(500).json({
+  error: "Could not load conversations"
+});
+
 }
 });
 
-// List messages for one conversation.
+// -------------------- LIST CHAT MESSAGES --------------------
+
 app.get("/api/chats/:phone/messages", async (req, res) => {
-if (!requireDatabase(res)) return;
+if (!db) {
+return res.status(503).json({
+error: "Firebase is not configured on the server"
+});
+}
 
 try {
 const phone = String(req.params.phone);
-const snapshot = await db.collection("chats")
-.doc(phone)
-.collection("messages")
-.orderBy("timestamp", "asc")
-.limit(500)
-.get();
 
-res.json(snapshot.docs.map(doc => ({
+const snapshot = await db.collection("chats")
+  .doc(phone)
+  .collection("messages")
+  .orderBy("timestamp", "asc")
+  .limit(500)
+  .get();
+
+return res.json(snapshot.docs.map(doc => ({
   id: doc.id,
   ...doc.data()
 })));
 
 } catch (error) {
 console.error("Loading messages failed:", error.message);
-res.status(500).json({ error: "Could not load messages" });
+
+return res.status(500).json({
+  error: "Could not load messages"
+});
+
 }
 });
 
-// Mark a conversation as read in this inbox.
+// -------------------- MARK CHAT AS READ --------------------
+
 app.post("/api/chats/:phone/read", async (req, res) => {
-if (!requireDatabase(res)) return;
+if (!db) {
+return res.status(503).json({
+error: "Firebase is not configured on the server"
+});
+}
 
 try {
 await db.collection("chats")
 .doc(String(req.params.phone))
-.set({ unreadCount: 0 }, { merge: true });
+.set({
+unreadCount: 0
+}, { merge: true });
 
-res.json({ ok: true });
+return res.json({ ok: true });
 
 } catch (error) {
 console.error("Marking chat read failed:", error.message);
-res.status(500).json({ error: "Could not mark conversation as read" });
+
+return res.status(500).json({
+  error: "Could not mark conversation as read"
+});
+
 }
 });
 
-// Send a WhatsApp text message.
+// -------------------- SEND WHATSAPP TEXT MESSAGE --------------------
+
 app.post("/api/messages", async (req, res) => {
 if (!db) {
 return res.status(503).json({
@@ -273,7 +326,7 @@ error: "Message must contain 1–4096 characters"
 
 try {
 const response = await fetch(
-"https://graph.facebook.com/v23.0/${PHONE_NUMBER_ID}/messages",
+"https://graph.facebook.com/${GRAPH_API_VERSION}/${PHONE_NUMBER_ID}/messages",
 {
 method: "POST",
 headers: {
@@ -285,7 +338,9 @@ messaging_product: "whatsapp",
 recipient_type: "individual",
 to,
 type: "text",
-text: { body: text }
+text: {
+body: text
+}
 })
 }
 );
@@ -293,22 +348,34 @@ text: { body: text }
 const result = await response.json();
 
 if (!response.ok) {
-  console.error("WhatsApp API error:", JSON.stringify(result));
+  console.error(
+    "WhatsApp API error:",
+    JSON.stringify(result.error || result)
+  );
+
   return res.status(response.status).json({
-    error: result.error?.message || "WhatsApp could not send the message"
+    error: result.error?.message ||
+      "WhatsApp could not send the message"
   });
 }
 
 const timestamp = new Date().toISOString();
+
 const messageId = result.messages?.[0]?.id ||
   `out_${Date.now()}`;
 
 const chatRef = db.collection("chats").doc(to);
-const messageRef = chatRef.collection("messages").doc(messageId);
+
+const messageRef = chatRef
+  .collection("messages")
+  .doc(messageId);
 
 await db.runTransaction(async transaction => {
   const chatSnapshot = await transaction.get(chatRef);
-  const oldChat = chatSnapshot.exists ? chatSnapshot.data() : {};
+
+  const oldChat = chatSnapshot.exists
+    ? chatSnapshot.data()
+    : {};
 
   transaction.set(chatRef, {
     phone: to,
@@ -336,17 +403,29 @@ return res.json({
 
 } catch (error) {
 console.error("Sending message failed:", error.message);
+
 return res.status(500).json({
-error: "Could not send message"
+  error: "Could not send message"
 });
+
 }
 });
 
-// Do not expose stack traces or environment secrets.
-app.use((err, req, res, next) => {
-console.error("Server error:", err.message);
-res.status(500).json({ error: "Internal server error" });
+// -------------------- ERROR HANDLER --------------------
+
+app.use((error, req, res, next) => {
+console.error("Server error:", error.message);
+
+if (res.headersSent) {
+return next(error);
+}
+
+return res.status(500).json({
+error: "Internal server error"
 });
+});
+
+// -------------------- START SERVER --------------------
 
 app.listen(PORT, () => {
 console.log("WhatsApp Inbox backend listening on port ${PORT}");
