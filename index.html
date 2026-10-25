@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#075e54">
+
+<title>WhatsApp Business Inbox</title>
+
+<style>
+:root {
+    --green: #075e54;
+    --light-green: #dcf8c6;
+    --bg: #f0f2f5;
+    --white: #ffffff;
+    --text: #111b21;
+    --muted: #667781;
+    --border: #e9edef;
+    --blue: #0084ff;
+    --red: #d93025;
+    --yellow: #f9c74f;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button, input, textarea, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.app {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    min-height: 64px;
+    background: var(--green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.logo {
+    width: 38px;
+    height: 38px;
+    background: white;
+    color: var(--green);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+}
+
+.connection {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.25);
+    color: white;
+    border-radius: 20px;
+    padding: 9px 12px;
+    font-size: 12px;
+}
+
+.connection-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f9c74f;
+    margin-right: 5px;
+}
+
+.layout {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+.sidebar {
+    width: 350px;
+    max-width: 40%;
+    background: white;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-top {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.search {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: var(--bg);
+    outline: none;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.tab {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+}
+
+.tab.active {
+    background: #d9fdd3;
+    color: #075e54;
+}
+
+.chat-list {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.empty-list {
+    padding: 35px 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.chat-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 14px;
+    background: white;
+    text-align: left;
+    color: var(--text);
+}
+
+.chat-item:hover,
+.chat-item.selected {
+    background: #f0f2f5;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #dfe5e7;
+    color: #54656f;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.chat-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-name {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.chat-preview {
+    color: var(--muted);
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-meta {
+    text-align: right;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.unread {
+    display: inline-grid;
+    place-items: center;
+    margin-top: 7px;
+    min-width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    padding: 0 5px;
+    color: white;
+    background: #25d366;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+    color: var(--muted);
+}
+
+.welcome h2 {
+    color: var(--text);
+    font-weight: 400;
+}
+
+.welcome-icon {
+    font-size: 65px;
+    margin-bottom: 12px;
+}
+
+.conversation {
+    flex: 1;
+    min-height: 0;
+    display: none;
+    flex-direction: column;
+}
+
+.chat-header {
+    min-height: 65px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+}
+
+.chat-header-info {
+    flex: 1;
+}
+
+.chat-header-name {
+    font-weight: bold;
+}
+
+.chat-header-number {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #efeae2;
+    background-image:
+        radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.message {
+    max-width: min(75%, 520px);
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    box-shadow: 0 1px 1px rgba(0,0,0,.08);
+}
+
+.message.incoming {
+    align-self: flex-start;
+    background: white;
+}
+
+.message.outgoing {
+    align-self: flex-end;
+    background: var(--light-green);
+}
+
+.message-time {
+    text-align: right;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.message-status {
+    color: #3478b9;
+    margin-left: 4px;
+}
+
+.composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: #f0f2f5;
+    padding: 12px;
+}
+
+.composer textarea {
+    flex: 1;
+    min-width: 0;
+    resize: none;
+    max-height: 130px;
+    padding: 12px;
+    border: none;
+    border-radius: 9px;
+    outline: none;
+}
+
+.send-btn {
+    border: none;
+    background: var(--green);
+    color: white;
+    padding: 13px 18px;
+    border-radius: 8px;
+}
+
+.settings {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(0,0,0,.48);
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+}
+
+.settings-panel {
+    width: min(650px, 100%);
+    max-height: 94dvh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 12px;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.close-btn {
+    border: none;
+    background: var(--bg);
+    border-radius: 7px;
+    padding: 8px 12px;
+}
+
+.settings-body {
+    padding: 18px;
+}
+
+.section {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.section h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.help {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+}
+
+.field {
+    margin-bottom: 14px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #d4d9dd;
+    border-radius: 7px;
+    outline-color: var(--green);
+}
+
+.field small {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btn {
+    padding: 10px 13px;
+    border-radius: 7px;
+    border: 1px solid #d4d9dd;
+    background: white;
+    color: var(--text);
+    font-size: 12px;
+}
+
+.btn.primary {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+}
+
+.btn.danger {
+    color: var(--red);
+    border-color: #f1b6b2;
+}
+
+.status-box {
+    background: var(--bg);
+    padding: 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.status-box.success {
+    background: #e4f7e8;
+    color: #146c2e;
+}
+
+.status-box.error {
+    background: #fde8e7;
+    color: #a12622;
+}
+
+.status-box.warning {
+    background: #fff4d6;
+    color: #795900;
+}
+
+.status-box a {
+    color: inherit;
+}
+
+.notice {
+    background: #fff4d6;
+    padding: 12px;
+    border-radius: 7px;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+}
+
+.footer {
+    border-top: 1px solid var(--border);
+    padding: 13px 18px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.mobile-back {
+    display: none;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+}
+
+@media (max-width: 650px) {
+    .header {
+        padding: 10px;
+    }
+
+    .brand {
+        font-size: 15px;
+    }
+
+    .connection {
+        font-size: 10px;
+        padding: 8px;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-width: none;
+    }
+
+    .main {
+        display: none;
+        width: 100%;
+    }
+
+    .layout.mobile-chat-open .sidebar {
+        display: none;
+    }
+
+    .layout.mobile-chat-open .main {
+        display: flex;
+    }
+
+    .mobile-back {
+        display: block;
+    }
+
+    .message {
+        max-width: 88%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <header class="header">
+        <div class="brand">
+            <div class="logo">◉</div>
+            <span>Business Inbox</span>
+        </div>
+
+        <button class="connection" id="connectionIndicator"
+                onclick="openSettings()">
+            <span class="connection-dot" id="connectionDot"></span>
+            <span id="connectionLabel">Setup Incomplete</span>
+        </button>
+    </header>
+
+    <div class="layout" id="layout">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-top">
+                <input
+                    id="searchInput"
+                    class="search"
+                    placeholder="Search customers..."
+                    autocomplete="off"
+                >
+
+                <div class="tabs">
+                    <button class="tab active"
+                            data-filter="all"
+                            onclick="setFilter('all', this)">All</button>
+
+                    <button class="tab"
+                            data-filter="unread"
+                            onclick="setFilter('unread', this)">Unread</button>
+
+                    <button class="tab"
+                            data-filter="open"
+                            onclick="setFilter('open', this)">Open</button>
+                </div>
+            </div>
+
+            <div class="chat-list" id="chatList">
+                <div class="empty-list">
+                    <div style="font-size:35px">💬</div>
+                    <p>No conversations loaded.</p>
+                    <p>Connect your backend to display real WhatsApp messages.</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                Messages are loaded from your configured backend.
+            </div>
+
+        </aside>
+
+        <main class="main">
+
+            <div class="welcome" id="welcome">
+                <div>
+                    <div class="welcome-icon">💬</div>
+                    <h2>WhatsApp Business Inbox</h2>
+                    <p>Select a customer to view the conversation.</p>
+                    <p>Or connect your WhatsApp Cloud API to get started.</p>
+
+                    <button class="btn primary"
+                            onclick="openSettings()">
+                        Connect WhatsApp API
+                    </button>
+                </div>
+            </div>
+
+            <section class="conversation" id="conversation">
+
+                <div class="chat-header">
+                    <button class="mobile-back"
+                            onclick="backToChats()">←</button>
+
+                    <div class="avatar" id="customerAvatar">?</div>
+
+                    <div class="chat-header-info">
+                        <div class="chat-header-name"
+                             id="customerName">Customer</div>
+
+                        <div class="chat-header-number"
+                             id="customerNumber"></div>
+                    </div>
+
+                    <button class="btn"
+                            onclick="refreshMessages()">
+                        Refresh
+                    </button>
+                </div>
+
+                <div class="messages" id="messages">
+                    <div class="empty-list">
+                        No messages loaded.
+                    </div>
+                </div>
+
+                <div class="composer">
+                    <textarea
+                        id="messageInput"
+                        rows="1"
+                        placeholder="Type a message..."
+                        maxlength="4096"
+                        disabled
+                    ></textarea>
+
+                    <button class="send-btn"
+                            id="sendButton"
+                            onclick="sendMessage()"
+                            disabled>
+                        Send ➤
+                    </button>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<!-- SETTINGS MODAL -->
+
+<div class="settings" id="settingsModal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="settingsTitle">
+
+    <div class="settings-panel">
+
+        <div class="settings-header">
+            <h2 id="settingsTitle">WhatsApp API Settings</h2>
+
+            <button class="close-btn"
+                    onclick="closeSettings()"
+                    aria-label="Close settings">
+                ✕
+            </button>
+        </div>
+
+        <div class="settings-body">
+
+            <div class="notice">
+                <strong>Security notice:</strong>
+                Your permanent access token must be sent directly to
+                your authenticated HTTPS backend. This HTML does not save
+                credentials in LocalStorage or browser storage.
+            </div>
+
+            <div class="section">
+
+                <h3>1. Connect WhatsApp Cloud API</h3>
+
+                <p class="help">
+                    Enter the credentials for your real WhatsApp Business
+                    Platform account. The backend must verify them using
+                    Meta's official API.
+                </p>
+
+                <div class="field">
+                    <label for="phoneNumberId">WhatsApp Phone Number ID *</label>
+                    <input id="phoneNumberId"
+                           placeholder="Enter Phone Number ID"
+                           autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label for="wabaId">WhatsApp Business Account ID *</label>
+                    <input id="wabaId"
+                           placeholder="Enter WABA ID"
+                           autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label for="accessToken">Permanent Access Token *</label>
+                    <input id="accessToken"
+                           type="password"
+                           placeholder="Enter access token"
+                           autocomplete="new-password">
+                    <small>
+                        The token is not retained in browser storage.
+                        It will be cleared after a successful save.
+                    </small>
+                </div>
+
+                <div class="field">
+                    <label for="appId">Meta App ID</label>
+                    <input id="appId"
+                           placeholder="Enter Meta App ID if required"
+                           autocomplete="off">
+                </div>
+
+                <div class="status-box warning"
+                     id="connectionStatus">
+                    Not Connected — no verified backend connection yet.
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn primary"
+                            id="connectButton"
+                            onclick="connectWhatsApp()">
+                        Connect WhatsApp
+                    </button>
+
+                    <button class="btn"
+                            onclick="testConnection()">
+                        Test Connection
+                    </button>
+
+                    <button class="btn"
+                            onclick="saveConfiguration()">
+                        Save Configuration
+                    </button>
+
+                    <button class="btn danger"
+                            onclick="disconnectWhatsApp()">
+                        Disconnect WhatsApp
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div class="section">
+
+                <h3>2. Webhook Setup</h3>
+
+                <p class="help">
+                    Your backend must expose a public HTTPS webhook endpoint
+                    and implement Meta's GET verification and POST signature
+                    verification.
+                </p>
+
+                <div class="field">
+                    <label>Backend Webhook URL</label>
+                    <input id="webhookUrl"
+                           readonly
+                           value="Not provided by backend">
+                </div>
+
+                <div class="field">
+                    <label>Webhook Verification Status</label>
+                    <div class="status-box warning"
+                         id="webhookStatus">
+                        Not verified. A real Meta verification or test event
+                        is required.
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Required WhatsApp Webhook Subscriptions</label>
+                    <div class="status-box">
+                        • messages — incoming messages and message statuses<br>
+                        • Subscribe the WhatsApp product to the appropriate
+                        webhook fields in the Meta Developer Dashboard.
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Last Successful Webhook Event</label>
+                    <div class="status-box" id="lastWebhookEvent">
+                        No successful event recorded.
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Last Webhook Error</label>
+                    <div class="status-box" id="lastWebhookError">
+                        No error information received from backend.
+                    </div>
+                </div>
+
+                <button class="btn primary"
+                        onclick="testWebhook()">
+                    Test Webhook
+                </button>
+
+            </div>
+
+
+            <div class="section">
+
+                <h3>3. Meta Developer Dashboard</h3>
+
+                <p class="help">
+                    Complete these steps after deploying the backend:
+                </p>
+
+                <ol class="help">
+                    <li>Open your Meta Developer App.</li>
+                    <li>Configure WhatsApp Cloud API and your business phone number.</li>
+                    <li>Generate a suitable system-user access token with
+                        the required permissions, such as
+                        <code>whatsapp_business_messaging</code> and
+                        <code>whatsapp_business_management</code>,
+                        as applicable.</li>
+                    <li>Set the public HTTPS webhook URL and verification
+                        token in your backend configuration.</li>
+                    <li>Subscribe your app to the WhatsApp Business Account's
+                        webhook events.</li>
+                    <li>Complete any required business verification and
+                        access requirements.</li>
+                    <li>Send a real test message and verify the resulting
+                        webhook event in the inbox.</li>
+                </ol>
+
+            </div>
+
+            <div class="section">
+
+                <h3>4. Backend Connection</h3>
+
+                <p class="help">
+                    Configure the base URL of your deployed backend.
+                    This URL is not a Meta API URL.
+                </p>
+
+                <div class="field">
+                    <label for="backendUrl">Backend HTTPS URL</label>
+                    <input id="backendUrl"
+                           type="url"
+                           placeholder="https://your-backend.example.com"
+                           autocomplete="url">
+                    <small>
+                        In production, use HTTPS and authenticate users
+                        before allowing configuration or messaging actions.
+                    </small>
+                </div>
+
+                <button class="btn primary"
+                        onclick="configureBackend()">
+                    Connect to Backend
+                </button>
+
+                <div class="help" style="margin-top:12px">
+                    The backend URL is stored locally as an application
+                    endpoint preference. Never enter access tokens here.
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer">
+            A successful UI action does not prove that Meta accepted a
+            configuration. Statuses must come from the backend.
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+"use strict";
+
+/*
+ * WHATSAPP CLOUD API FRONTEND
+ *
+ * This file does not call Meta with a permanent access token.
+ *
+ * Required backend endpoints:
+ *
+ * GET  /api/health
+ * GET  /api/whatsapp/status
+ * POST /api/whatsapp/connect
+ * POST /api/whatsapp/test
+ * POST /api/whatsapp/disconnect
+ * POST /api/whatsapp/configuration
+ * GET  /api/whatsapp/webhook/status
+ * POST /api/whatsapp/webhook/test
+ * GET  /api/conversations
+ * GET  /api/conversations/:id/messages
+ * POST /api/conversations/:id/messages
+ * POST /api/conversations/:id/read
+ * GET  /api/events                 (SSE)
+ *
+ * The backend must implement these routes securely.
+ * Adapt paths and response shapes to your actual backend.
+ */
+
+const $ = id => document.getElementById(id);
+
+const state = {
+    backend: "",
+    connection: "unknown",
+    conversations: [],
+    selectedConversation: null,
+    filter: "all",
+    eventSource: null,
+    refreshTimer: null
+};
+
+function normalizeBaseUrl(value) {
+    const url = new URL(value);
+
+    if (url.protocol !== "https:" &&
+        url.hostname !== "localhost" &&
+        url.hostname !== "127.0.0.1") {
+        throw new Error("The backend must use HTTPS.");
+    }
+
+    return url.origin + url.pathname.replace(/\/+$/, "");
+}
+
+function apiUrl(path) {
+    if (!state.backend) {
+        throw new Error("Configure your backend URL first.");
+    }
+
+    return state.backend + path;
+}
+
+async function api(path, options = {}) {
+    const headers = {
+        "Accept": "application/json",
+        ...(options.headers || {})
+    };
+
+    if (options.body !== undefined) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    const response = await fetch(apiUrl(path), {
+        method: options.method || "GET",
+        headers,
+        body: options.body === undefined
+            ? undefined
+            : JSON.stringify(options.body),
+        credentials: "include",
+        cache: "no-store"
+    });
+
+    const text = await response.text();
+
+    let data = {};
+
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch {
+            throw new Error(
+                "Backend returned an invalid response. Check the API route."
+            );
+        }
+    }
+
+    if (!response.ok) {
+        const error = new Error(
+            data.error || data.message ||
+            `Backend request failed (${response.status}).`
+        );
+
+        error.status = response.status;
+        error.data = data;
+
+        throw error;
+    }
+
+    return data;
+}
+
+function showStatus(message, type = "warning") {
+    const box = $("connectionStatus");
+    box.textContent = message;
+    box.className = "status-box " + type;
+}
+
+function updateIndicator(status) {
+    state.connection = status;
+
+    const dot = $("connectionDot");
+    const label = $("connectionLabel");
+
+    const values = {
+        connected: ["Connected", "#25d366"],
+        connecting: ["Connecting", "#f9c74f"],
+        authentication_failed: ["Authentication Failed", "#ff4d4f"],
+        invalid_configuration: ["Invalid Configuration", "#ff4d4f"],
+        webhook_not_configured: ["Setup Incomplete", "#f9c74f"],
+        connection_error: ["Connection Error", "#ff4d4f"],
+        not_connected: ["Not Connected", "#f9c74f"],
+        unknown: ["Setup Incomplete", "#f9c74f"]
+    };
+
+    const item = values[status] || values.unknown;
+
+    label.textContent = item[0];
+    dot.style.background = item[1];
+}
+
+function normalizeConnectionStatus(data) {
+    const status = String(data.status || "").toLowerCase();
+
+    const allowed = [
+        "connected",
+        "connecting",
+        "authentication_failed",
+        "invalid_configuration",
+        "webhook_not_configured",
+        "connection_error",
+        "not_connected"
+    ];
+
+    return allowed.includes(status) ? status : "unknown";
+}
+
+function openSettings() {
+    $("settingsModal").style.display = "flex";
+    loadBackendStatus();
+}
+
+function closeSettings() {
+    $("settingsModal").style.display = "none";
+}
+
+$("settingsModal").addEventListener("click", event => {
+    if (event.target === $("settingsModal")) {
+        closeSettings();
+    }
+});
+
+function configureBackend() {
+    try {
+        const input = $("backendUrl").value.trim();
+
+        if (!input) {
+            alert("Enter your deployed backend URL.");
+            return;
+        }
+
+        const normalized = normalizeBaseUrl(input);
+
+        /*
+         * Do not store credentials here.
+         * This preference is an endpoint URL, not a secret.
+         */
+        localStorage.setItem("businessInboxBackend", normalized);
+
+        state.backend = normalized;
+
+        alert("Backend URL configured. Checking the real backend now.");
+
+        initializeBackend();
+    } catch (error) {
+        alert(error.message || "Invalid backend URL.");
+    }
+}
+
+async function initializeBackend() {
+    if (!state.backend) {
+        updateIndicator("unknown");
+        return;
+    }
+
+    try {
+        await api("/api/health");
+
+        await loadBackendStatus();
+        await loadConversations();
+        await loadWebhookStatus();
+
+        connectRealtime();
+    } catch (error) {
+        updateIndicator("connection_error");
+
+        showStatus(
+            "Backend unavailable: " + error.message,
+            "error"
+        );
+    }
+}
+
+async function loadBackendStatus() {
+    if (!state.backend) return;
+
+    try {
+        const data = await api("/api/whatsapp/status");
+
+        const status = normalizeConnectionStatus(data);
+
+        updateIndicator(status);
+
+        showStatus(
+            data.message || ("WhatsApp status: " + status),
+            status === "connected" ? "success" :
+            status === "connection_error" ||
+            status === "authentication_failed" ||
+            status === "invalid_configuration" ? "error" :
+            "warning"
+        );
+
+        if (data.phoneNumberId) {
+            $("phoneNumberId").value = data.phoneNumberId;
+        }
+
+        if (data.wabaId) {
+            $("wabaId").value = data.wabaId;
+        }
+
+        if (data.appId) {
+            $("appId").value = data.appId;
+        }
+
+        /*
+         * Never retrieve or display the saved permanent token.
+         */
+    } catch (error) {
+        updateIndicator("connection_error");
+        showStatus(error.message, "error");
+    }
+}
+
+function readCredentials() {
+    const phoneNumberId = $("phoneNumberId").value.trim();
+    const wabaId = $("wabaId").value.trim();
+    const accessToken = $("accessToken").value.trim();
+    const appId = $("appId").value.trim();
+
+    if (!phoneNumberId || !wabaId || !accessToken) {
+        throw new Error(
+            "Phone Number ID, WABA ID and access token are required."
+        );
+    }
+
+    if (!/^\d+$/.test(phoneNumberId)) {
+        throw new Error("Phone Number ID must contain digits only.");
+    }
+
+    if (!/^\d+$/.test(wabaId)) {
+        throw new Error("WABA ID must contain digits only.");
+    }
+
+    if (appId && !/^\d+$/.test(appId)) {
+        throw new Error("Meta App ID must contain digits only.");
+    }
+
+    return {
+        phoneNumberId,
+        wabaId,
+        accessToken,
+        ...(appId ? { appId } : {})
+    };
+}
+
+async function connectWhatsApp() {
+    if (!state.backend) {
+        alert("Configure and connect your backend first.");
+        return;
+    }
+
+    let credentials;
+
+    try {
+        credentials = readCredentials();
+    } catch (error) {
+        alert(error.message);
+        return;
+    }
+
+    const button = $("connectButton");
+
+    button.disabled = true;
+    button.textContent = "Connecting...";
+
+    updateIndicator("connecting");
+    showStatus("Verifying credentials with the backend...", "warning");
+
+    try {
+        const data = await api("/api/whatsapp/connect", {
+            method: "POST",
+            body: credentials
+        });
+
+        /*
+         * The backend must verify the actual Meta API connection.
+         * Do not infer success from HTTP 200 alone.
+         */
+        const status = normalizeConnectionStatus(data);
+
+        updateIndicator(status);
+
+        showStatus(
+            data.message || "Backend verification completed.",
+            status === "connected" ? "success" : "warning"
+        );
+
+        if (status === "connected") {
+            $("accessToken").value = "";
+
+            await loadBackendStatus();
+            await loadConversations();
+            await loadWebhookStatus();
+            connectRealtime();
+        } else {
+            showStatus(
+                data.message ||
+                "The backend did not confirm a verified connection.",
+                "error"
+            );
+        }
+    } catch (error) {
+        updateIndicator(
+            error.status === 401 || error.status === 403
+                ? "authentication_failed"
+                : "connection_error"
+        );
+
+        showStatus(error.message, "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Connect WhatsApp";
+
+        /*
+         * The token is never saved in browser storage.
+         * Keep it only for the immediate request if needed.
+         */
+        credentials.accessToken = "";
+        credentials = null;
+    }
+}
+
+async function testConnection() {
+    if (!state.backend) {
+        alert("Configure your backend first.");
+        return;
+    }
+
+    try {
+        const data = await api("/api/whatsapp/test", {
+            method: "POST",
+            body: {}
+        });
+
+        const status = normalizeConnectionStatus(data);
+
+        updateIndicator(status);
+
+        showStatus(
+            data.message || "Backend test completed.",
+            status === "connected" ? "success" : "error"
+        );
+    } catch (error) {
+        updateIndicator("connection_error");
+        showStatus(error.message, "error");
+    }
+}
+
+async function saveConfiguration() {
+    if (!state.backend) {
+        alert("Configure your backend first.");
+        return;
+    }
+
+    let credentials;
+
+    try {
+        credentials = readCredentials();
+    } catch (error) {
+        alert(error.message);
+        return;
+    }
+
+    try {
+        const data = await api("/api/whatsapp/configuration", {
+            method: "POST",
+            body: credentials
+        });
+
+        const status = normalizeConnectionStatus(data);
+
+        updateIndicator(status);
+
+        showStatus(
+            data.message || "Backend configuration request completed.",
+            status === "connected" ? "success" : "warning"
+        );
+
+        if (data.saved === true) {
+            $("accessToken").value = "";
+        }
+    } catch (error) {
+        showStatus(error.message, "error");
+    } finally {
+        credentials.accessToken = "";
+        credentials = null;
+    }
+}
+
+async function disconnectWhatsApp() {
+    if (!state.backend) {
+        alert("Configure your backend first.");
+        return;
+    }
+
+    if (!confirm(
+        "Disconnect the WhatsApp configuration from this inbox?"
+    )) {
+        return;
+    }
+
+    try {
+        const data = await api("/api/whatsapp/disconnect", {
+            method: "POST",
+            body: {}
+        });
+
+        const status = normalizeConnectionStatus(data);
+
+        updateIndicator(status);
+
+        showStatus(
+            data.message || "Disconnect request processed.",
+            status === "not_connected" ? "success" : "warning"
+        );
+
+        if (status === "not_connected") {
+            closeRealtime();
+            await loadConversations();
+        }
+    } catch (error) {
+        showStatus(error.message, "error");
+    }
+}
+
+async function loadWebhookStatus() {
+    if (!state.backend) return;
+
+    try {
+        const data = await api("/api/whatsapp/webhook/status");
+
+        $("webhookUrl").value =
+            data.webhookUrl || "Not provided by backend";
+
+        $("webhookStatus").textContent =
+            data.verified === true
+                ? "Verified by backend."
+                : data.message ||
+                  "Webhook verification has not been confirmed.";
+
+        $("webhookStatus").className =
+            "status-box " +
+            (data.verified === true ? "success" : "warning");
+
+        $("lastWebhookEvent").textContent =
+            data.lastSuccessfulEvent || "No successful event recorded.";
+
+        $("lastWebhookError").textContent =
+            data.lastError || "No webhook error reported.";
+    } catch (error) {
+        $("webhookStatus").textContent = error.message;
+        $("webhookStatus").className = "status-box error";
+    }
+}
+
+async function testWebhook() {
+    if (!state.backend) {
+        alert("Configure your backend first.");
+        return;
+    }
+
+    try {
+        const data = await api("/api/whatsapp/webhook/test", {
+            method: "POST",
+            body: {}
+        });
+
+        $("webhookStatus").textContent =
+            data.message || "Webhook test request processed.";
+
+        $("webhookStatus").className =
+            "status-box " +
+            (data.verified === true ? "success" : "warning");
+
+        await loadWebhookStatus();
+    } catch (error) {
+        $("webhookStatus").textContent = error.message;
+        $("webhookStatus").className = "status-box error";
+    }
+}
+
+async function loadConversations() {
+    if (!state.backend) return;
+
+    try {
+        const data = await api("/api/conversations");
+
+        if (!Array.isArray(data.conversations)) {
+            throw new Error(
+                "Backend response must contain a conversations array."
+            );
+        }
+
+        state.conversations = data.conversations;
+
+        renderConversations();
+
+        if (state.selectedConversation) {
+            const exists = state.conversations.some(
+                c => String(c.id) ===
+                     String(state.selectedConversation)
+            );
+
+            if (exists) {
+                await refreshMessages();
+            } else {
+                state.selectedConversation = null;
+                showWelcome();
+            }
+        }
+    } catch (error) {
+        $("chatList").innerHTML = "";
+
+        const message = document.createElement("div");
+        message.className = "empty-list";
+        message.textContent =
+            "Unable to load conversations: " + error.message;
+
+        $("chatList").appendChild(message);
+    }
+}
+
+function setFilter(filter, button) {
+    state.filter = filter;
+
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    renderConversations();
+}
+
+function renderConversations() {
+    const list = $("chatList");
+    const query = $("searchInput").value.toLowerCase().trim();
+
+    list.replaceChildren();
+
+    let conversations = state.conversations.filter(c => {
+        const name = String(c.customerName || "").toLowerCase();
+        const phone = String(c.customerPhone || "");
+        const preview = String(c.lastMessage || "").toLowerCase();
+
+        if (query &&
+            !name.includes(query) &&
+            !phone.includes(query) &&
+            !preview.includes(query)) {
+            return false;
+        }
+
+        if (state.filter === "unread" && !(Number(c.unreadCount) > 0)) {
+            return false;
+        }
+
+        if (state.filter === "open" && c.isOpen === false) {
+            return false;
+        }
+
+        return true;
+    });
+
+    if (!conversations.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-list";
+        empty.textContent = state.backend
+            ? "No matching conversations."
+            : "Connect your backend to load real conversations.";
+
+        list.appendChild(empty);
+        return;
+    }
+
+    for (const c of conversations) {
+        const button = document.createElement("button");
+        button.className = "chat-item";
+
+        if (String(c.id) === String(state.selectedConversation)) {
+            button.classList.add("selected");
+        }
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent =
+            String(c.customerName || "?").charAt(0).toUpperCase();
+
+        const details = document.createElement("div");
+        details.className = "chat-details";
+
+        const name = document.createElement("div");
+        name.className = "chat-name";
+        name.textContent = c.customerName || c.customerPhone || "Customer";
+
+        const preview = document.createElement("div");
+        preview.className = "chat-preview";
+        preview.textContent = c.lastMessage || "No messages yet";
+
+        details.append(name, preview);
+
+        const meta = document.createElement("div");
+        meta.className = "chat-meta";
+
+        const time = document.createElement("div");
+        time.textContent = c.lastMessageAt
+            ? formatTime(c.lastMessageAt)
+            : "";
+
+        meta.appendChild(time);
+
+        if (Number(c.unreadCount) > 0) {
+            const unread = document.createElement("span");
+            unread.className = "unread";
+            unread.textContent = String(c.unreadCount);
+            meta.appendChild(unread);
+        }
+
+        button.append(avatar, details, meta);
+
+        button.addEventListener("click", () => {
+            selectConversation(c.id);
+        });
+
+        list.appendChild(button);
+    }
+}
+
+function formatTime(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+async function selectConversation(id) {
+    state.selectedConversation = id;
+
+    $("welcome").style.display = "none";
+    $("conversation").style.display = "flex";
+    $("layout").classList.add("mobile-chat-open");
+
+    renderConversations();
+
+    const conversation = state.conversations.find(
+        c => String(c.id) === String(id)
+    );
+
+    if (!conversation) return;
+
+    $("customerName").textContent =
+        conversation.customerName || "Customer";
+
+    $("customerNumber").textContent =
+        conversation.customerPhone || "";
+
+    $("customerAvatar").textContent =
+        String(conversation.customerName || "?")
+            .charAt(0).toUpperCase();
+
+    $("messageInput").disabled = false;
+    $("sendButton").disabled = false;
+
+    await refreshMessages();
+
+    try {
+        await api(
+            "/api/conversations/" +
+            encodeURIComponent(id) + "/read",
+            {
+                method: "POST",
+                body: {}
+            }
+        );
+
+        conversation.unreadCount = 0;
+        renderConversations();
+    } catch (error) {
+        console.error("Unable to mark conversation read:", error.message);
+    }
+}
+
+function showWelcome() {
+    $("welcome").style.display = "flex";
+    $("conversation").style.display = "none";
+    $("layout").classList.remove("mobile-chat-open");
+}
+
+function backToChats() {
+    $("layout").classList.remove("mobile-chat-open");
+}
+
+async function refreshMessages() {
+    if (!state.backend || !state.selectedConversation) return;
+
+    try {
+        const data = await api(
+            "/api/conversations/" +
+            encodeURIComponent(state.selectedConversation) +
+            "/messages"
+        );
+
+        if (!Array.isArray(data.messages)) {
+            throw new Error("Backend response must contain a messages array.");
+        }
+
+        renderMessages(data.messages);
+    } catch (error) {
+        $("messages").replaceChildren();
+
+        const notice = document.createElement("div");
+        notice.className = "empty-list";
+        notice.textContent = "Unable to load messages: " + error.message;
+
+        $("messages").appendChild(notice);
+    }
+}
+
+function renderMessages(messages) {
+    const container = $("messages");
+    container.replaceChildren();
+
+    if (!messages.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-list";
+        empty.textContent = "No messages in this conversation yet.";
+        container.appendChild(empty);
+        return;
+    }
+
+    for (const m of messages) {
+        const bubble = document.createElement("div");
+
+        bubble.className = "message " +
+            (m.direction === "outgoing" ? "outgoing" : "incoming");
+
+        let body = m.text || "";
+
+        if (!body && m.type) {
+            body = "[" + m.type + " message]";
+        }
+
+        const text = document.createElement("div");
+        text.textContent = body || "[Message content unavailable]";
+
+        const time = document.createElement("div");
+        time.className = "message-time";
+
+        time.textContent = m.createdAt
+            ? formatTime(m.createdAt)
+            : "";
+
+        if (m.direction === "outgoing") {
+            const status = document.createElement("span");
+            status.className = "message-status";
+            status.textContent = statusSymbol(m.status);
+            status.title = "Message status: " + (m.status || "unknown");
+            time.appendChild(status);
+        }
+
+        bubble.append(text, time);
+        container.appendChild(bubble);
+    }
+
+    container.scrollTop = container.scrollHeight;
+}
+
+function statusSymbol(status) {
+    switch (String(status || "").toLowerCase()) {
+        case "sent":
+            return "✓";
+        case "delivered":
+            return "✓✓";
+        case "read":
+            return "✓✓";
+        case "failed":
+            return "!";
+        case "pending":
+            return "…";
+        default:
+            return "";
+    }
+}
+
+async function sendMessage() {
+    const input = $("messageInput");
+    const button = $("sendButton");
+
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    if (!state.backend) {
+        alert("Backend is not configured.");
+        return;
+    }
+
+    if (!state.selectedConversation) {
+        alert("Select a customer conversation first.");
+        return;
+    }
+
+    if (state.connection !== "connected") {
+        alert(
+            "WhatsApp is not verified as connected. Check API settings first."
+        );
+        return;
+    }
+
+    button.disabled = true;
+
+    try {
+        /*
+         * The backend must:
+         * 1. Authenticate and authorize this user.
+         * 2. Verify the conversation belongs to the connected WABA.
+         * 3. Enforce WhatsApp's 24-hour customer-service window.
+         * 4. Require approved templates when applicable.
+         * 5. Call the official Meta Cloud API.
+         * 6. Persist the real response and wamid.
+         *
+         * Do not add an outgoing message to the UI as successful
+         * until the backend returns the actual API result.
+         */
+        const data = await api(
+            "/api/conversations/" +
+            encodeURIComponent(state.selectedConversation) +
+            "/messages",
+            {
+                method: "POST",
+                body: {
+                    type: "text",
+                    text
+                }
+            }
+        );
+
+        if (!data.message) {
+            throw new Error(
+                "Backend did not return the saved message."
+            );
+        }
+
+        if (data.message.status === "failed" || data.success === false) {
+            throw new Error(
+                data.error || "WhatsApp rejected the message."
+            );
+        }
+
+        input.value = "";
+
+        await refreshMessages();
+        await loadConversations();
+    } catch (error) {
+        alert("Message was not confirmed as sent: " + error.message);
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function connectRealtime() {
+    closeRealtime();
+
+    if (!state.backend || !window.EventSource) {
+        return;
+    }
+
+    /*
+     * SSE is useful for foreground updates.
+     * The backend must authenticate this stream and send events
+     * only to the authorized account.
+     *
+     * Browser EventSource does not support arbitrary authorization
+     * headers. Use a secure same-site session cookie, or another
+     * authenticated real-time transport.
+     */
+    try {
+        state.eventSource = new EventSource(
+            apiUrl("/api/events"),
+            { withCredentials: true }
+        );
+
+        state.eventSource.addEventListener("open", () => {
+            console.info("Realtime stream connected.");
+        });
+
+        state.eventSource.addEventListener("message", event => {
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            handleRealtimeEvent(data);
+        });
+
+        [
+            "message.created",
+            "message.status",
+            "conversation.updated",
+            "webhook.received"
+        ].forEach(type => {
+            state.eventSource.addEventListener(type, event => {
+                let data;
+
+                try {
+                    data = JSON.parse(event.data);
+                } catch {
+                    return;
+                }
+
+                handleRealtimeEvent({
+                    ...data,
+                    type
+                });
+            });
+        });
+
+        state.eventSource.addEventListener("error", () => {
+            console.warn("Realtime stream disconnected.");
+        });
+    } catch (error) {
+        console.error("Realtime setup failed:", error.message);
+    }
+}
+
+function closeRealtime() {
+    if (state.eventSource) {
+        state.eventSource.close();
+        state.eventSource = null;
+    }
+}
+
+async function handleRealtimeEvent(event) {
+    /*
+     * These events must originate from the backend after it has
+     * processed genuine Meta webhook events.
+     */
+    if (event.type === "webhook.received" ||
+        event.type === "message.created" ||
+        event.type === "message.status" ||
+        event.type === "conversation.updated") {
+
+        await loadConversations();
+
+        if (
+            event.conversationId &&
+            String(event.conversationId) ===
+            String(state.selectedConversation)
+        ) {
+            await refreshMessages();
+        }
+
+        if (
+            event.type === "message.created" &&
+            event.direction === "incoming" &&
+            event.conversationId &&
+            String(event.conversationId) !==
+            String(state.selectedConversation)
+        ) {
+            showBrowserNotification(event);
+        }
+    }
+}
+
+async function showBrowserNotification(event) {
+    if (!("Notification" in window)) return;
+
+    if (Notification.permission !== "granted") return;
+
+    const notification = new Notification(
+        event.customerName || "New WhatsApp message",
+        {
+            body: event.preview || "You received a new message.",
+            tag: "conversation-" + event.conversationId
+        }
+    );
+
+    notification.onclick = () => {
+        window.focus();
+        selectConversation(event.conversationId);
+        notification.close();
+    };
+}
+
+async function requestNotifications() {
+    if (!("Notification" in window)) {
+        alert("Notifications are not supported in this browser.");
+        return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    alert("Notification permission: " + permission);
+}
+
+$("searchInput").addEventListener("input", renderConversations);
+
+$("messageInput").addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+});
+
+/*
+ * Restore only the non-secret backend endpoint.
+ * No access token, customer message, or credential is stored here.
+ */
+(function boot() {
+    try {
+        const saved = localStorage.getItem("businessInboxBackend");
+
+        if (saved) {
+            state.backend = normalizeBaseUrl(saved);
+            $("backendUrl").value = state.backend;
+            initializeBackend();
+        } else {
+            updateIndicator("unknown");
+        }
+    } catch {
+        updateIndicator("unknown");
+    }
+})();
+</script>
+
+</body>
+</html>
