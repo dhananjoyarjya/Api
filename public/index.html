@@ -1,0 +1,581 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Business Inbox</title>
+  <style>
+    :root {
+      --green: #128c7e;
+      --green-dark: #075e54;
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --text: #202c33;
+      --muted: #667781;
+      --border: #e9edef;
+    }* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--green-dark);
+  color: white;
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+header h1 { font-size: 19px; margin: 0; }
+header small { font-size: 12px; opacity: .85; }
+.status { font-size: 12px; text-align: right; }
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  margin: 12px;
+  background: var(--panel);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px #00000012;
+}
+
+.sidebar {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+}
+
+.search-wrap { padding: 12px; border-bottom: 1px solid var(--border); }
+
+input, button {
+  font: inherit;
+}
+
+.search {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: #f0f2f5;
+  padding: 12px;
+  outline: none;
+}
+
+.chat-list { overflow-y: auto; flex: 1; }
+
+.chat-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: white;
+  padding: 14px 12px;
+  cursor: pointer;
+}
+
+.chat-item:hover, .chat-item.active { background: #f0f2f5; }
+
+.avatar {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  border-radius: 50%;
+  background: #d9fdd3;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  color: var(--green-dark);
+}
+
+.chat-info { min-width: 0; flex: 1; }
+.chat-name { font-size: 14px; font-weight: bold; overflow-wrap: anywhere; }
+.chat-preview {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.conversation {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #efeae2;
+}
+
+.chat-header {
+  background: #f7f8fa;
+  border-bottom: 1px solid var(--border);
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-header .details { min-width: 0; }
+.chat-header strong { overflow-wrap: anywhere; }
+.chat-header small { display: block; margin-top: 4px; color: var(--muted); }
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  background-color: #efeae2;
+  background-image: radial-gradient(#ffffff55 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.bubble {
+  max-width: min(78%, 560px);
+  border-radius: 9px;
+  padding: 9px 11px;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  box-shadow: 0 1px 1px #00000010;
+}
+
+.bubble.incoming { align-self: flex-start; background: white; }
+.bubble.outgoing { align-self: flex-end; background: #d9fdd3; }
+.bubble time {
+  display: block;
+  text-align: right;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  margin: auto;
+  padding: 24px;
+  line-height: 1.6;
+}
+
+.composer {
+  background: #f7f8fa;
+  padding: 12px;
+  display: flex;
+  gap: 9px;
+  border-top: 1px solid var(--border);
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 22px;
+  outline: none;
+  background: white;
+}
+
+button.send {
+  background: var(--green);
+  color: white;
+  border: 0;
+  border-radius: 22px;
+  padding: 0 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.notice {
+  display: none;
+  padding: 10px 14px;
+  font-size: 13px;
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.top-actions { display: flex; gap: 8px; align-items: center; }
+
+.refresh {
+  background: #ffffff20;
+  border: 1px solid #ffffff55;
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.back {
+  display: none;
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 3px 7px;
+}
+
+@media (max-width: 650px) {
+  header { padding: 12px; }
+  header h1 { font-size: 16px; }
+  .layout { margin: 0; border-radius: 0; grid-template-columns: 1fr; }
+  .sidebar, .conversation { grid-column: 1; grid-row: 1; }
+  .conversation { display: none; }
+  .layout.show-conversation .sidebar { display: none; }
+  .layout.show-conversation .conversation { display: flex; }
+  .back { display: inline-block; }
+  .messages { padding: 12px; }
+  .bubble { max-width: 88%; }
+  .status { font-size: 10px; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>WhatsApp Business Inbox</h1>
+        <small>Customer conversations</small>
+      </div>
+      <div class="top-actions">
+        <div class="status" id="connectionStatus">Connecting…</div>
+        <button class="refresh" id="refreshButton" type="button">Refresh</button>
+      </div>
+    </header><div class="notice" id="notice"></div>
+
+<main class="layout" id="layout">
+  <aside class="sidebar">
+    <div class="search-wrap">
+      <input class="search" id="searchInput" type="search"
+             placeholder="Search name or phone…">
+    </div>
+    <div class="chat-list" id="chatList">
+      <div class="empty">Loading conversations…</div>
+    </div>
+  </aside>
+
+  <section class="conversation">
+    <div class="chat-header">
+      <button class="back" id="backButton" type="button" aria-label="Back">←</button>
+      <div class="avatar" id="contactAvatar">?</div>
+      <div class="details">
+        <strong id="contactName">Select a conversation</strong>
+        <small id="contactPhone">Customer messages will appear here</small>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="empty">
+        <strong>WhatsApp Inbox</strong><br>
+        Select a customer to view the conversation.
+      </div>
+    </div>
+
+    <form class="composer" id="messageForm">
+      <input id="messageInput" type="text" maxlength="4096"
+             placeholder="Type a message…" autocomplete="off" disabled>
+      <button class="send" id="sendButton" type="submit" disabled>Send</button>
+    </form>
+  </section>
+</main>
+
+  </div>  <script>
+    const API_BASE = window.location.origin;
+
+    const state = {
+      chats: [],
+      selectedPhone: null,
+      messages: [],
+      loadingMessages: false
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function showNotice(message) {
+      const box = $("notice");
+      box.textContent = message;
+      box.style.display = message ? "block" : "none";
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(API_BASE + path, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Request failed (${response.status})`);
+      }
+      return data;
+    }
+
+    function formatTime(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "2-digit",
+        month: "short"
+      });
+    }
+
+    function initials(name) {
+      return String(name || "?").trim().slice(0, 1).toUpperCase() || "?";
+    }
+
+    function latestText(chat) {
+      return chat.lastMessage || chat.last_message || "No messages yet";
+    }
+
+    function renderChats() {
+      const query = $("searchInput").value.trim().toLowerCase();
+      const list = $("chatList");
+      list.replaceChildren();
+
+      const filtered = state.chats.filter(chat => {
+        const phone = String(chat.phone || chat.id || "");
+        const name = String(chat.name || phone);
+        return (name + " " + phone).toLowerCase().includes(query);
+      });
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = state.chats.length
+          ? "No matching customers."
+          : "No conversations yet. Send a WhatsApp message to your connected number to test the webhook.";
+        list.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach(chat => {
+        const phone = String(chat.phone || chat.id || "");
+        const name = String(chat.name || phone || "Unknown customer");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chat-item" + (phone === state.selectedPhone ? " active" : "");
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = initials(name);
+
+        const info = document.createElement("div");
+        info.className = "chat-info";
+
+        const title = document.createElement("div");
+        title.className = "chat-name";
+        title.textContent = name;
+
+        const preview = document.createElement("div");
+        preview.className = "chat-preview";
+        preview.textContent = latestText(chat);
+
+        info.append(title, preview);
+        button.append(avatar, info);
+        button.addEventListener("click", () => selectChat(phone));
+        list.appendChild(button);
+      });
+    }
+
+    function renderMessages() {
+      const container = $("messages");
+      container.replaceChildren();
+
+      if (state.loadingMessages) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Loading messages…";
+        container.appendChild(empty);
+        return;
+      }
+
+      if (!state.messages.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No messages in this conversation yet.";
+        container.appendChild(empty);
+        return;
+      }
+
+      state.messages.forEach(message => {
+        const bubble = document.createElement("div");
+        const direction = message.direction || message.type || "incoming";
+        const outgoing = direction === "outgoing" || direction === "sent";
+        bubble.className = "bubble " + (outgoing ? "outgoing" : "incoming");
+
+        const text = document.createElement("div");
+        text.textContent = message.text || message.body || "[Non-text message]";
+        const time = document.createElement("time");
+        time.textContent = formatTime(message.timestamp || message.createdAt);
+        bubble.append(text, time);
+        container.appendChild(bubble);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function checkStatus() {
+      try {
+        const status = await api("/api/status");
+        const whatsappReady = Boolean(status.whatsappConfigured);
+        const firebaseReady = Boolean(status.firebaseReady);
+
+        $("connectionStatus").textContent =
+          (whatsappReady ? "WhatsApp ready" : "WhatsApp not configured") +
+          " · " +
+          (firebaseReady ? "Database ready" : "Database not configured");
+
+        if (!firebaseReady) {
+          showNotice("Firebase is not connected on the server. Check FIREBASE_SERVICE_ACCOUNT_JSON in Render.");
+        } else if (!whatsappReady) {
+          showNotice("WhatsApp API settings are missing on the server. Check the Render environment variables.");
+        } else {
+          showNotice("");
+        }
+      } catch (error) {
+        $("connectionStatus").textContent = "Server unavailable";
+        showNotice("Cannot connect to the backend. Check that this page is served by your deployed Render service. " + error.message);
+      }
+    }
+
+    async function loadChats() {
+      try {
+        const result = await api("/api/chats");
+        state.chats = Array.isArray(result) ? result : (result.chats || []);
+        renderChats();
+
+        if (state.selectedPhone &&
+            state.chats.some(chat => String(chat.phone || chat.id) === state.selectedPhone)) {
+          await loadMessages(state.selectedPhone, false);
+        }
+      } catch (error) {
+        showNotice("Could not load conversations: " + error.message);
+      }
+    }
+
+    async function selectChat(phone) {
+      state.selectedPhone = phone;
+      const chat = state.chats.find(item => String(item.phone || item.id) === phone);
+      const name = chat ? (chat.name || phone) : phone;
+
+      $("contactName").textContent = name;
+      $("contactPhone").textContent = phone;
+      $("contactAvatar").textContent = initials(name);
+      $("messageInput").disabled = false;
+      $("sendButton").disabled = false;
+      $("layout").classList.add("show-conversation");
+
+      renderChats();
+      await loadMessages(phone, true);
+    }
+
+    async function loadMessages(phone, markRead) {
+      if (!phone) return;
+      state.loadingMessages = true;
+      renderMessages();
+
+      try {
+        const result = await api("/api/chats/" + encodeURIComponent(phone) + "/messages");
+        state.messages = Array.isArray(result) ? result : (result.messages || []);
+        renderMessages();
+
+        if (markRead) {
+          try {
+            await api("/api/chats/" + encodeURIComponent(phone) + "/read", {
+              method: "POST",
+              body: JSON.stringify({})
+            });
+          } catch (_) {}
+        }
+      } catch (error) {
+        state.messages = [];
+        renderMessages();
+        showNotice("Could not load messages: " + error.message);
+      } finally {
+        state.loadingMessages = false;
+        renderMessages();
+      }
+    }
+
+    $("messageForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const text = $("messageInput").value.trim();
+      const to = state.selectedPhone;
+
+      if (!to || !text) return;
+
+      $("sendButton").disabled = true;
+      $("messageInput").disabled = true;
+
+      try {
+        await api("/api/messages", {
+          method: "POST",
+          body: JSON.stringify({ to, text })
+        });
+
+        $("messageInput").value = "";
+        showNotice("");
+        await loadMessages(to, false);
+        await loadChats();
+      } catch (error) {
+        showNotice("Message not sent: " + error.message);
+      } finally {
+        $("sendButton").disabled = !state.selectedPhone;
+        $("messageInput").disabled = !state.selectedPhone;
+        $("messageInput").focus();
+      }
+    });
+
+    $("searchInput").addEventListener("input", renderChats);
+    $("refreshButton").addEventListener("click", async () => {
+      await checkStatus();
+      await loadChats();
+      if (state.selectedPhone) await loadMessages(state.selectedPhone, false);
+    });
+    $("backButton").addEventListener("click", () => {
+      $("layout").classList.remove("show-conversation");
+    });
+
+    async function start() {
+      await checkStatus();
+      await loadChats();
+
+      // Refresh conversations periodically while the inbox is open.
+      setInterval(async () => {
+        await loadChats();
+      }, 15000);
+    }
+
+    start();
+  </script></body>
+  </html>
