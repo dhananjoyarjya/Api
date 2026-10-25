@@ -1,38 +1,346 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>WhatsApp Business Inbox</title>
-<style>
-:root{--green:#008069;--dark:#075e54;--bg:#efeae2;--line:#e9edef;--muted:#667781;--out:#d9fdd3}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#111b21;background:#f7f8fa}.app{height:100dvh;display:flex;flex-direction:column}header{background:var(--dark);color:white;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;gap:8px}h1{font-size:17px;margin:0 0 4px}.status{font-size:11px;text-align:right}.pill{border:1px solid #ffffff55;background:#ffffff20;color:white;border-radius:8px;padding:9px;cursor:pointer}.main{display:grid;grid-template-columns:340px minmax(0,1fr);flex:1;min-height:0;background:white}.sidebar{display:flex;flex-direction:column;border-right:1px solid var(--line);min-width:0}.side-top{padding:12px;border-bottom:1px solid var(--line)}input,button,textarea,select{font:inherit}.search{width:100%;padding:12px;border:0;border-radius:9px;background:#f0f2f5}.tabs{display:flex;gap:5px;margin-top:9px}.tab{border:0;border-radius:18px;padding:7px 10px;background:#f0f2f5;font-size:12px}.tab.active{background:#d9fdd3;color:var(--dark)}.chat-list{overflow:auto;flex:1}.chat-item{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:0;border-bottom:1px solid var(--line);background:white;text-align:left}.chat-item.active{background:#f0f2f5}.avatar{width:43px;height:43px;border-radius:50%;background:#d9fdd3;color:var(--dark);display:grid;place-items:center;font-weight:bold;flex-shrink:0}.chat-info{min-width:0;flex:1}.chat-name{font-weight:bold;font-size:14px}.preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}.badge{background:var(--green);color:white;border-radius:20px;padding:3px 6px;font-size:11px}.conversation{display:flex;flex-direction:column;min-width:0;background:var(--bg)}.chat-head{display:flex;align-items:center;gap:10px;padding:12px;background:#f7f8fa;border-bottom:1px solid var(--line)}.who{flex:1;min-width:0}.who small{display:block;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.messages{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background-image:radial-gradient(#ffffff66 1px,transparent 1px);background-size:18px 18px}.bubble{max-width:85%;padding:9px 11px;border-radius:9px;background:white;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 1px 2px #0001;font-size:14px}.bubble.out{align-self:flex-end;background:var(--out)}.bubble time{display:block;text-align:right;color:var(--muted);font-size:10px;margin-top:5px}.empty{margin:auto;text-align:center;color:var(--muted);padding:20px;line-height:1.5}.composer-wrap{position:relative;padding:10px;background:#f7f8fa;border-top:1px solid var(--line)}.composer{display:flex;gap:8px}.composer input{min-width:0;flex:1;border:1px solid #ddd;border-radius:24px;padding:13px;background:white}.send,.primary{background:var(--green);color:white;border:0;border-radius:22px;padding:12px 18px}.send:disabled{opacity:.5}.notice{display:none;background:#fff3cd;color:#664d03;padding:9px 12px;font-size:13px}.quick-menu{display:none;position:absolute;bottom:70px;left:10px;right:10px;max-height:240px;overflow:auto;background:white;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 25px #0002;z-index:4}.quick-option{display:block;width:100%;text-align:left;padding:10px;border:0;border-bottom:1px solid var(--line);background:white}.quick-option span{display:block;color:var(--muted);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.back{display:none;border:0;background:transparent;font-size:22px}.modal-bg{display:none;position:fixed;inset:0;background:#0007;z-index:10;align-items:center;justify-content:center;padding:12px}.modal{background:white;border-radius:13px;padding:17px;width:min(600px,100%);max-height:90dvh;overflow:auto}.modal h2{margin:0 0 12px;font-size:19px}.modal label{display:block;font-size:13px;font-weight:bold;margin:12px 0 5px}.modal input,.modal textarea,.modal select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px}.modal textarea{min-height:80px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.secondary,.danger{border:0;border-radius:8px;padding:9px 12px;background:#f0f2f5}.danger{background:#fee2e2;color:#991b1b}.quick-card{display:flex;gap:8px;border:1px solid var(--line);padding:9px;border-radius:8px;margin-top:8px}.quick-card div{flex:1;min-width:0}.quick-card small{display:block;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);margin-top:4px}.note{font-size:12px;color:var(--muted);line-height:1.5}.warning{background:#fff3cd;padding:10px;border-radius:8px;font-size:13px;line-height:1.5}
-@media(max-width:700px){header{padding:11px}h1{font-size:16px}.main{grid-template-columns:1fr}.sidebar,.conversation{grid-column:1;grid-row:1}.conversation{display:none}.main.show-chat .sidebar{display:none}.main.show-chat .conversation{display:flex}.back{display:block}.messages{padding:11px}}
-</style></head><body><div class="app">
-<header><div><h1>WhatsApp Business Inbox</h1><small>Customer conversations</small></div><div style="display:flex;align-items:center;gap:6px"><div class="status" id="status">Connecting…</div><button class="pill" id="refresh">↻</button><button class="pill" id="quickOpen">⚡ Replies</button><button class="pill" id="settingsOpen">⚙</button></div></header><div id="notice" class="notice"></div>
-<main class="main" id="main"><aside class="sidebar"><div class="side-top"><input id="search" class="search" placeholder="Search name or phone…"><div class="tabs"><button class="tab active" data-filter="all">All chats</button><button class="tab" data-filter="unread">Unread</button><button class="tab" data-filter="starred">★ Starred</button></div></div><div class="chat-list" id="chatList"><div class="empty">Loading chats…</div></div></aside>
-<section class="conversation"><div class="chat-head"><button class="back" id="back">←</button><div class="avatar" id="avatar">?</div><div class="who"><strong id="contactName">Select a conversation</strong><small id="contactPhone">Customer messages appear here</small></div><button class="secondary" id="star">☆</button></div><div class="messages" id="messages"><div class="empty">Select a customer to view messages.</div></div><div class="composer-wrap"><div class="quick-menu" id="quickMenu"></div><form class="composer" id="form"><input id="message" placeholder="Type a message… (type / for replies)" maxlength="4096" autocomplete="off" disabled><button class="send" id="send" disabled>Send</button></form></div></section></main></div>
-<div class="modal-bg" id="quickModal"><div class="modal"><h2>Quick replies</h2><p class="note">Unlimited saved replies. Type / in chat to search by shortcut or text.</p><label>Shortcut (without /)</label><input id="shortcut" placeholder="welcome"><label>Reply text</label><textarea id="replyText" placeholder="Your saved message"></textarea><div class="row"><button class="primary" id="saveReply">Save reply</button><button class="secondary" data-close="quickModal">Close</button></div><div id="quickList"></div></div></div>
-<div class="modal-bg" id="settingsModal"><div class="modal"><h2>Settings</h2><div class="warning">Security: do not paste your access token here. Keep WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID in Render → Environment. This page uses the backend already configured on Render.</div><label>Greeting message</label><textarea id="greeting" placeholder="Hello! Thanks for contacting us. How can we help?"></textarea><label><input id="greetingEnabled" type="checkbox" style="width:auto"> Enable greeting reminder</label><p class="note">Greeting text is saved in this browser only. Automatic greetings need additional backend logic; this toggle alone does not send a message.</p><label>Theme</label><select id="theme"><option value="green">WhatsApp green</option><option value="blue">Blue</option></select><div class="row"><button class="primary" id="saveSettings">Save settings</button><button class="secondary" data-close="settingsModal">Close</button></div></div></div>
-<script>
-const $=id=>document.getElementById(id),API_BASE=location.origin;
-const state={chats:[],selected:null,messages:[],filter:"all",starred:new Set(JSON.parse(localStorage.getItem("wa_starred")||"[]")),replies:JSON.parse(localStorage.getItem("wa_replies")||"[]")};
-function notice(t){$("notice").textContent=t||"";$("notice").style.display=t?"block":"none"}
-async function api(p,o={}){const r=await fetch(API_BASE+p,{...o,headers:{"Content-Type":"application/json",...(o.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error||`Request failed (${r.status})`);return d}
-function initial(n){return String(n||"?").trim().slice(0,1).toUpperCase()}
-function fmt(v){if(!v)return"";const d=new Date(v);return isNaN(d)?"":d.toLocaleString([],{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}
-function renderChats(){let q=$("search").value.toLowerCase().trim(),box=$("chatList");box.replaceChildren();let a=state.chats.filter(c=>{let p=String(c.phone||c.id||""),n=String(c.name||p);return(n+" "+p).toLowerCase().includes(q)&&(state.filter!=="unread"||+c.unreadCount>0)&&(state.filter!=="starred"||state.starred.has(p))});if(!a.length){box.innerHTML='<div class="empty">No matching chats yet.</div>';return}a.forEach(c=>{let p=String(c.phone||c.id||""),n=String(c.name||p),b=document.createElement("button");b.className="chat-item"+(p===state.selected?" active":"");let av=document.createElement("div");av.className="avatar";av.textContent=initial(n);let info=document.createElement("div");info.className="chat-info";let title=document.createElement("div");title.className="chat-name";title.textContent=n;let preview=document.createElement("div");preview.className="preview";preview.textContent=c.lastMessage||"No messages yet";info.append(title,preview);b.append(av,info);if(+c.unreadCount>0){let badge=document.createElement("span");badge.className="badge";badge.textContent=c.unreadCount;b.append(badge)}b.onclick=()=>selectChat(p);box.append(b)})}
-function renderMessages(){let box=$("messages");box.replaceChildren();if(!state.messages.length){box.innerHTML='<div class="empty">No messages in this conversation yet.</div>';return}state.messages.forEach(m=>{let b=document.createElement("div");b.className="bubble "+(m.direction==="outgoing"||m.direction==="sent"?"out":"in");let t=document.createElement("div");t.textContent=m.text||m.body||"[Non-text message]";let tm=document.createElement("time");tm.textContent=fmt(m.timestamp||m.createdAt);b.append(t,tm);box.append(b)});box.scrollTop=box.scrollHeight}
-async function status(){try{let s=await api("/api/status");$("status").textContent=(s.whatsappConfigured?"WhatsApp ready":"WhatsApp not configured")+" · "+(s.firebaseReady?"Database ready":"Database not configured");if(!s.firebaseReady||!s.whatsappConfigured)notice("Render environment variables check karo.")}catch(e){$("status").textContent="Server unavailable";notice("Backend error: "+e.message)}}
-async function loadChats(){try{let d=await api("/api/chats");state.chats=Array.isArray(d)?d:(d.chats||[]);renderChats();if(state.selected&&state.chats.some(c=>String(c.phone||c.id)===state.selected))await loadMessages(state.selected,false)}catch(e){notice("Chats load nahi hue: "+e.message)}}
-async function selectChat(p){state.selected=p;let c=state.chats.find(x=>String(x.phone||x.id)===p),n=c?.name||p;$("contactName").textContent=n;$("contactPhone").textContent=p;$("avatar").textContent=initial(n);$("message").disabled=false;$("send").disabled=false;$("main").classList.add("show-chat");$("star").textContent=state.starred.has(p)?"★":"☆";renderChats();await loadMessages(p,true)}
-async function loadMessages(p,read){try{let d=await api("/api/chats/"+encodeURIComponent(p)+"/messages");state.messages=Array.isArray(d)?d:(d.messages||[]);renderMessages();if(read)await api("/api/chats/"+encodeURIComponent(p)+"/read",{method:"POST",body:"{}"})}catch(e){notice("Messages load nahi hue: "+e.message)}}
-function modal(id,on){$(id).style.display=on?"flex":"none"}
-function saveReplies(){localStorage.setItem("wa_replies",JSON.stringify(state.replies));renderReplies()}
-function renderReplies(){let box=$("quickList");box.replaceChildren();state.replies.forEach((r,i)=>{let card=document.createElement("div");card.className="quick-card";let d=document.createElement("div"),s=document.createElement("strong"),sm=document.createElement("small");s.textContent="/"+r.shortcut;sm.textContent=r.text;d.append(s,sm);let use=document.createElement("button");use.className="secondary";use.textContent="Insert";use.onclick=()=>{$("message").value=r.text;modal("quickModal",false);$("message").focus()};let del=document.createElement("button");del.className="danger";del.textContent="Delete";del.onclick=()=>{state.replies.splice(i,1);saveReplies()};card.append(d,use,del);box.append(card)})}
-function showQuickMenu(v){let box=$("quickMenu");box.replaceChildren();let q=v.slice(1).toLowerCase(),found=state.replies.filter(r=>(r.shortcut+" "+r.text).toLowerCase().includes(q));if(!found.length){box.style.display="none";return}found.forEach(r=>{let b=document.createElement("button");b.className="quick-option";let s=document.createElement("strong"),t=document.createElement("span");s.textContent="/"+r.shortcut;t.textContent=r.text;b.append(s,t);b.onclick=()=>{$("message").value=r.text;box.style.display="none";$("message").focus()};box.append(b)});box.style.display="block"}
-$("message").addEventListener("input",()=>{let v=$("message").value;if(v.startsWith("/"))showQuickMenu(v.split(/\s/)[0]);else $("quickMenu").style.display="none"});
-$("message").addEventListener("keydown",e=>{if(e.key==="Escape")$("quickMenu").style.display="none";if(e.key==="Enter"){e.preventDefault();$("form").requestSubmit()}});
-$("form").onsubmit=async e=>{e.preventDefault();let text=$("message").value.trim(),to=state.selected;if(!to||!text)return;$("send").disabled=true;try{await api("/api/messages",{method:"POST",body:JSON.stringify({to,text})});$("message").value="";$("quickMenu").style.display="none";notice("");await loadMessages(to,false);await loadChats()}catch(err){notice("Message send nahi hua: "+err.message)}finally{$("send").disabled=!state.selected}};
-$("quickOpen").onclick=()=>{renderReplies();modal("quickModal",true)};$("saveReply").onclick=()=>{let shortcut=$("shortcut").value.trim().replace(/^\//,"").replace(/\s+/g,"_"),text=$("replyText").value.trim();if(!shortcut||!text){alert("Shortcut aur reply text bharo.");return}let i=state.replies.findIndex(r=>r.shortcut.toLowerCase()===shortcut.toLowerCase());if(i>=0)state.replies[i]={shortcut,text};else state.replies.push({shortcut,text});saveReplies();$("shortcut").value="";$("replyText").value="";notice("Quick reply saved on this device.")};
-$("settingsOpen").onclick=()=>{ $("greeting").value=localStorage.getItem("wa_greeting")||"";$("greetingEnabled").checked=localStorage.getItem("wa_greeting_enabled")==="true";$("theme").value=localStorage.getItem("wa_theme")||"green";modal("settingsModal",true)};
-$("saveSettings").onclick=()=>{localStorage.setItem("wa_greeting",$("greeting").value);localStorage.setItem("wa_greeting_enabled",String($("greetingEnabled").checked));localStorage.setItem("wa_theme",$("theme").value);document.documentElement.style.setProperty("--green",$("theme").value==="blue"?"#1976d2":"#008069");document.documentElement.style.setProperty("--dark",$("theme").value==="blue"?"#0d47a1":"#075e54");modal("settingsModal",false);notice("Settings saved. Automatic greeting needs backend support.")};
-$("star").onclick=()=>{if(!state.selected)return;state.starred.has(state.selected)?state.starred.delete(state.selected):state.starred.add(state.selected);localStorage.setItem("wa_starred",JSON.stringify([...state.starred]));$("star").textContent=state.starred.has(state.selected)?"★":"☆";renderChats()};
-document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));renderChats()});$("search").oninput=renderChats;$("refresh").onclick=async()=>{await status();await loadChats()};$("back").onclick=()=>$("main").classList.remove("show-chat");document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>modal(b.dataset.close,false));["quickModal","settingsModal"].forEach(id=>$(id).onclick=e=>{if(e.target===$(id))modal(id,false)});
-async function start(){await status();await loadChats();renderReplies();setInterval(loadChats,15000)}start();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Business Inbox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        wa: {
+                            light: '#00a884',
+                            dark: '#005c4b',
+                            bg: '#efeae2',
+                            chat: '#f0f2f5',
+                            panel: '#ffffff',
+                            sidebar: '#f0f2f5',
+                            darkbg: '#111b21',
+                            darkpanel: '#202c33',
+                            darkchat: '#0b141a',
+                            darkhover: '#2a3942',
+                            darktext: '#e9edef'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .whatsapp-bg {
+            background-color: #efeae2;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .dark .whatsapp-bg {
+            background-color: #0b141a;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4H6zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden bg-gray-100 dark:bg-wa-darkbg text-gray-800 dark:text-wa-darktext font-sans antialiased select-none">
+
+    <!-- App Container -->
+    <div id="app" class="flex h-full w-full relative overflow-hidden">
+
+        <!-- Left Navigation Bar -->
+        <nav aria-label="Main Navigation" class="w-16 flex-shrink-0 bg-gray-200 dark:bg-wa-darkpanel border-r border-gray-300 dark:border-gray-800 flex flex-col justify-between items-center py-4 z-20">
+            <div class="flex flex-col space-y-4 items-center">
+                <button onclick="switchNavTab('chats')" id="nav-btn-chats" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Chats">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Chats</span>
+                </button>
+                <button onclick="switchNavTab('quick-replies')" id="nav-btn-quick-replies" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Quick Replies">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Quick Replies</span>
+                </button>
+                <button onclick="switchNavTab('greetings')" id="nav-btn-greetings" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Greeting Message">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Greeting Message</span>
+                </button>
+            </div>
+            <div class="flex flex-col space-y-4 items-center">
+                <button onclick="toggleDemoMode()" id="nav-btn-demo" class="p-3 rounded-xl text-amber-600 hover:bg-amber-100 dark:hover:bg-wa-darkhover transition relative group" title="Toggle Demo Mode">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Demo Mode</span>
+                </button>
+                <button onclick="openSettingsModal()" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Business Settings">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Settings</span>
+                </button>
+                <button onclick="toggleDarkMode()" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Toggle Dark/Light Mode">
+                    <svg id="theme-icon-light" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg id="theme-icon-dark" class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Toggle Theme</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Secondary Panel (Chat List or Management Views) -->
+        <div id="secondary-panel" class="w-full md:w-80 lg:w-96 flex-shrink-0 bg-white dark:bg-wa-darkpanel border-r border-gray-300 dark:border-gray-800 flex flex-col z-10">
+            <!-- Dynamic Secondary Content injected here -->
+        </div>
+
+        <!-- Main Workspace Area (Chat Conversation or Empty State) -->
+        <div id="main-workspace" class="flex-1 flex flex-col bg-gray-50 dark:bg-wa-darkchat relative h-full">
+            <!-- Dynamic Workspace Content injected here -->
+        </div>
+
+        <!-- Right Customer Info Panel (Toggleable) -->
+        <aside aria-label="Customer Information" id="info-panel" class="hidden lg:flex w-80 flex-shrink-0 bg-white dark:bg-wa-darkpanel border-l border-gray-300 dark:border-gray-800 flex-col z-10">
+            <!-- Dynamic Info Content injected here -->
+        </aside>
+
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modal-container"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Application Logic Script -->
+    <script>
+        /**
+         * WhatsApp Business Inbox - Single File Application
+         * Architecture: State-driven Vanilla JS with LocalStorage persistence & Meta Cloud API integration.
+         */
+
+        // --- Application State ---
+        const STORAGE_VERSION = 'v1.0';
+        const STORAGE_PREFIX = 'wa_bus_inbox_';
+
+        let state = {
+            activeNav: 'chats', // 'chats', 'quick-replies', 'greetings'
+            activeChatId: null,
+            filter: 'all', // 'all', 'unread', 'starred', 'archived'
+            searchQuery: '',
+            demoMode: false,
+            darkMode: false,
+            infoPanelOpen: true,
+            settings: {
+                phoneNumberId: '1392350110630223',
+                wabaId: '',
+                apiVersion: 'v17.0',
+                token: '' // Session only, not persisted
+            },
+            chats: [],
+            quickReplies: [
+                { id: 'qr_1', shortcut: '/hello', title: 'Welcome Greeting', body: 'Hello! Thank you for contacting us. How can we help you today?' },
+                { id: 'qr_2', shortcut: '/price', title: 'Pricing Inquiry', body: 'Thank you for your interest! Please tell us which product you would like to know more about.' },
+                { id: 'qr_3', shortcut: '/payment', title: 'Payment Reference', body: 'Thank you for contacting us. Please share your order or payment reference so we can assist you.' },
+                { id: 'qr_4', shortcut: '/thanks', title: 'Appreciation', body: 'Thank you for contacting us. We appreciate your support!' }
+            ],
+            greetings: {
+                enabled: false,
+                template: 'Hello {{name}}! Thanks for reaching out to us. How can we assist you today?'
+            }
+        };
+
+        // --- Initial Mock Data for Demo Mode ---
+        const DEMO_CHATS = [
+            {
+                id: 'demo_1',
+                name: 'Aarav Sharma',
+                phone: '919876543210',
+                isDemo: true,
+                unreadCount: 1,
+                isStarred: true,
+                isArchived: false,
+                labels: ['VIP Customer', 'Pending Order'],
+                notes: 'Interested in enterprise bulk pricing. Prefers communication via WhatsApp.',
+                messages: [
+                    { id: 'm1', direction: 'in', text: 'Hi, I need assistance with my recent software license order.', timestamp: Date.now() - 3600000 * 2, status: 'read' },
+                    { id: 'm2', direction: 'out', text: 'Hello Aarav! Thank you for contacting us. How can we help you today?', timestamp: Date.now() - 3600000, status: 'delivered', apiMsgId: 'wamid.demo1' },
+                    { id: 'm3', direction: 'in', text: 'Can you send me the invoice for transaction #9842?', timestamp: Date.now() - 1800000, status: 'read' }
+                ]
+            },
+            {
+                id: 'demo_2',
+                name: 'Priya Patel',
+                phone: '919123456789',
+                isDemo: true,
+                unreadCount: 0,
+                isStarred: false,
+                isArchived: false,
+                labels: ['New Lead'],
+                notes: 'Inquired about custom API integrations.',
+                messages: [
+                    { id: 'm4', direction: 'in', text: 'Hello, do you provide custom webhook integrations?', timestamp: Date.now() - 86400000, status: 'read' },
+                    { id: 'm5', direction: 'out', text: 'Thank you for your interest! Please tell us which product you would like to know more about.', timestamp: Date.now() - 85000000, status: 'read', apiMsgId: 'wamid.demo2' }
+                ]
+            }
+        ];
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            detectTheme();
+            render();
+            
+            // Check if default phone number id is prefilled in settings
+            if(!state.settings.phoneNumberId) {
+                state.settings.phoneNumberId = '1392350110630223';
+            }
+        });
+
+        // --- LocalStorage Management ---
+        function loadFromLocalStorage() {
+            try {
+                const savedChats = localStorage.getItem(STORAGE_PREFIX + 'chats');
+                const savedQR = localStorage.getItem(STORAGE_PREFIX + 'quick_replies');
+                const savedGreetings = localStorage.getItem(STORAGE_PREFIX + 'greetings');
+                const savedTheme = localStorage.getItem(STORAGE_PREFIX + 'dark_mode');
+
+                if (savedChats) state.chats = JSON.parse(savedChats);
+                if (savedQR) state.quickReplies = JSON.parse(savedQR);
+                if (savedGreetings) state.greetings = JSON.parse(savedGreetings);
+                if (savedTheme !== null) state.darkMode = JSON.parse(savedTheme);
+            } catch (e) {
+                console.error('Error loading from LocalStorage:', e);
+                showToast('Error loading saved data. Resetting to defaults.', 'error');
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_PREFIX + 'chats', JSON.stringify(state.chats));
+                localStorage.setItem(STORAGE_PREFIX + 'quick_replies', JSON.stringify(state.quickReplies));
+                localStorage.setItem(STORAGE_PREFIX + 'greetings', JSON.stringify(state.greetings));
+                localStorage.setItem(STORAGE_PREFIX + 'dark_mode', JSON.stringify(state.darkMode));
+            } catch (e) {
+                console.error('Error saving to LocalStorage:', e);
+                showToast('Storage limit reached or unavailable.', 'error');
+            }
+        }
+
+        function exportData() {
+            const exportObj = {
+                version: STORAGE_VERSION,
+                timestamp: new Date().toISOString(),
+                chats: state.chats,
+                quickReplies: state.quickReplies,
+                greetings: state.greetings
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `wa_business_backup_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Backup exported successfully.', 'success');
+        }
+
+        function importData(event) {
+            const fileReader = new FileReader();
+            if (event.target.files[0]) {
+                fileReader.readAsText(event.target.files[0], "UTF-8");
+                fileReader.onload = (e) => {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        if (parsed.chats && Array.isArray(parsed.chats)) {
+                            state.chats = parsed.chats;
+                            if (parsed.quickReplies) state.quickReplies = parsed.quickReplies;
+                            if (parsed.greetings) state.greetings = parsed.greetings;
+                            saveToLocalStorage();
+                            render();
+                            showToast('Data imported successfully.', 'success');
+                        } else {
+                            throw new Error('Invalid backup file structure.');
+                        }
+                    } catch (err) {
+                        showToast('Failed to parse backup file.', 'error');
+                    }
+                };
+            }
+        }
+
+        // --- Theme Management ---
+        function detectTheme() {
+            if (state.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        function toggleDarkMode() {
+            state.darkMode = !state.darkMode;
+            detectTheme();
+            saveToLocalStorage();
+            render();
+        }
+
+        function toggleDemoMode() {
+            state.demoMode = !state.demoMode;
+            if (state.demoMode) {
+                // Merge demo chats if not present
+                DEMO_CHATS.forEach(dc => {
+                    if (!state.chats.some(c => c.id === dc.id)) {
+                        state.chats.unshift(dc);
+                    }
+                });
+                showToast('Demo Mode Enabled. Sample conversations loaded.', 'info');
+            } else {
+                state.chats = state.chats.filter(c => !c.isDemo);
+                showToast('Demo Mode Disabled.', 'info');
+            }
+            if (state.activeChatId && !state.chats.some(c => c.id === state.activeChatId)) {
+                state.activeChatId = state.chats.length > 0 ? state.chats[0].id : null;
+            }
+            render();
+        }
+
+        // --- Navigation Controller ---
+        function switchNavTab(tab) {
+            state.activeNav = tab;
+            renderSecondaryPanel();
+            updateNavUI();
+        }
+
+        function updateNavUI() {
+            ['chats', 'quick-replies', 'greetings'].forEach(tab => {
+                const btn = document.getElementById(`nav-btn-${tab}`);
+                if (btn) {
+                    if (state.activeNav === tab) {
+                        btn.classList.add('bg-gray-300', 'dark:bg-wa-darkhover', 'text-wa-light');
+                    } else {
+                        btn.classList.remove('bg-gray-300', 'dark:bg-wa-darkhover', 'text-wa-light');
+                    }
+                }
+            });
+        }
+
+        // --- Master Render Function ---
+        function render() {
+            updateNavUI();
+            renderSecondaryPanel();
+            renderMainWorkspace();
+            renderInfoPanel();
+        }
+
+        // --- Secondary Panel Renderer ---
+        function renderSecondaryPanel() {
+            const panel = document.getElementById('secondary-panel');
+            if (!panel) return;
+
+            if (state.activeNav === 'chats') {
+                panel.innerHTML = `
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex flex-col space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Chats</h1>
+                            <div clas
