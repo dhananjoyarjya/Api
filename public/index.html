@@ -1,346 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Business Inbox</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        wa: {
-                            light: '#00a884',
-                            dark: '#005c4b',
-                            bg: '#efeae2',
-                            chat: '#f0f2f5',
-                            panel: '#ffffff',
-                            sidebar: '#f0f2f5',
-                            darkbg: '#111b21',
-                            darkpanel: '#202c33',
-                            darkchat: '#0b141a',
-                            darkhover: '#2a3942',
-                            darktext: '#e9edef'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 3px;
-        }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .whatsapp-bg {
-            background-color: #efeae2;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
-        }
-        .dark .whatsapp-bg {
-            background-color: #0b141a;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4H6zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>WhatsApp Business Inbox</title>
+<style>
+:root{--bg:#f3f6f8;--panel:#fff;--text:#17212b;--muted:#667781;--line:#e5e9ed;--green:#087f68;--green2:#d9fdd3;--nav:#075e54;--shadow:0 8px 28px #14202b0d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #20a890;outline-offset:2px}.app{min-height:100dvh;display:grid;grid-template-columns:72px 280px minmax(0,1fr);max-width:1800px;margin:auto;background:var(--panel);box-shadow:var(--shadow)}.rail{background:var(--nav);color:white;display:flex;flex-direction:column;align-items:center;padding:16px 8px;gap:12px}.brand{width:42px;height:42px;border-radius:14px;background:#fff;color:var(--nav);display:grid;place-items:center;font-size:23px;font-weight:800;margin-bottom:14px}.rail button{width:48px;height:46px;border-radius:13px;background:transparent;color:#d5eee8;font-size:20px}.rail button.active,.rail button:hover{background:#ffffff24;color:white}.rail .bottom{margin-top:auto}.sidebar{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column}.sidehead{padding:20px 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.sidehead h1{font-size:20px;margin:0}.pill{font-size:11px;border-radius:20px;padding:4px 8px;background:#e8f6f2;color:#087f68;font-weight:700}.search{padding:0 12px 12px}.search input{width:100%;border:1px solid var(--line);background:#f7f9fa;border-radius:12px;padding:11px 12px}.filters{display:flex;gap:6px;padding:0 12px 12px;overflow:auto}.filter{white-space:nowrap;padding:7px 10px;border-radius:20px;background:#f1f4f5;color:var(--muted);font-size:12px}.filter.active{background:#d8f3eb;color:#056653;font-weight:700}.chatlist{overflow:auto;flex:1}.chatrow{display:flex;gap:11px;padding:13px 12px;border-top:1px solid #f0f2f3;cursor:pointer}.chatrow:hover,.chatrow.active{background:#edf7f4}.avatar{width:42px;height:42px;border-radius:50%;background:#d6eee7;color:#086653;display:grid;place-items:center;font-weight:800;flex-shrink:0}.chatmeta{min-width:0;flex:1}.chatline{display:flex;justify-content:space-between;gap:8px}.chatname{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.time{font-size:11px;color:var(--muted);white-space:nowrap}.preview{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}.unread{background:#16a085;color:white;min-width:19px;height:19px;border-radius:20px;display:inline-grid;place-items:center;font-size:11px;padding:0 5px;margin-left:5px}.main{display:flex;min-width:0;min-height:100dvh;flex-direction:column;background:#f7f9fa}.topbar{height:72px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:12px}.topbar .who{min-width:0;flex:1}.topbar strong{display:block;font-size:15px}.topbar small{color:var(--muted)}.btn{border-radius:10px;padding:9px 12px;background:#edf2f3;color:#33434b;font-weight:650}.btn.primary{background:var(--green);color:white}.btn.ghost{background:transparent;border:1px solid var(--line)}.btn.danger{background:#fff0f0;color:#b42318}.content{padding:20px;overflow:auto;flex:1}.empty{height:100%;min-height:360px;display:grid;place-items:center;text-align:center;color:var(--muted);padding:30px}.empty .big{font-size:54px;margin-bottom:10px}.messages{display:flex;flex-direction:column;gap:10px;max-width:900px;margin:auto}.day{text-align:center;color:#65747b;font-size:11px;margin:8px auto;background:#fff;padding:5px 10px;border-radius:9px}.bubble{max-width:min(76%,620px);padding:10px 12px;border-radius:13px;background:white;box-shadow:0 1px 2px #0000000b;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.out{align-self:flex-end;background:var(--green2)}.bubble.in{align-self:flex-start}.bubble .stamp{display:block;text-align:right;color:#718078;font-size:10px;margin-top:5px}.composer{padding:12px 16px;background:white;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-end}.composer textarea{resize:none;min-height:44px;max-height:130px;flex:1;border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafb}.compose-tools{display:flex;gap:6px}.notice{padding:12px 14px;background:#fff8e6;border:1px solid #f6df9a;border-radius:12px;color:#73591b;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);min-width:0}.card h3{margin:0 0 8px;font-size:14px}.metric{font-size:28px;font-weight:800}.muted{color:var(--muted)}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.section-title h2{margin:0;font-size:22px}.stack{display:grid;gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:700;color:#50616a}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;color:var(--text)}.field textarea{min-height:90px;resize:vertical}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.quicklist,.label-list,.product-list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;background:white}.item .grow{flex:1;min-width:0}.item p{margin:3px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}.tag{font-size:11px;padding:4px 8px;border-radius:20px;background:#eaf5f2;color:#087f68}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#17212b;color:white;padding:11px 16px;border-radius:12px;z-index:99;box-shadow:var(--shadow);max-width:90vw}.toast.error{background:#9d2929}.mobile-back{display:none}.hidden{display:none!important}.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#1baa79;margin-right:6px}.status-dot.off{background:#dc8b24}.small{font-size:12px}.footer-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+@media(max-width:900px){.app{grid-template-columns:58px 240px minmax(0,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:14px}.topbar{padding:0 12px}}
+@media(max-width:650px){.app{display:block;min-height:100dvh}.rail{position:fixed;z-index:10;left:0;right:0;bottom:0;height:60px;flex-direction:row;justify-content:space-around;padding:5px 8px;gap:2px}.brand{display:none}.rail button{height:46px;width:48px}.rail .bottom{margin:0}.sidebar{height:calc(100dvh - 60px);border:0}.main{display:none;height:calc(100dvh - 60px);min-height:0}.app.show-chat .sidebar{display:none}.app.show-chat .main{display:flex}.app.show-chat .rail{display:none}.mobile-back{display:inline-flex}.topbar{height:64px}.content{padding:12px}.grid{grid-template-columns:1fr 1fr;gap:8px}.card{padding:13px}.metric{font-size:23px}.formgrid{grid-template-columns:1fr}.bubble{max-width:88%}.composer{padding:9px}.composer .btn{padding:10px}.sidehead{padding-top:16px}}
+</style>
 </head>
-<body class="h-screen w-screen overflow-hidden bg-gray-100 dark:bg-wa-darkbg text-gray-800 dark:text-wa-darktext font-sans antialiased select-none">
-
-    <!-- App Container -->
-    <div id="app" class="flex h-full w-full relative overflow-hidden">
-
-        <!-- Left Navigation Bar -->
-        <nav aria-label="Main Navigation" class="w-16 flex-shrink-0 bg-gray-200 dark:bg-wa-darkpanel border-r border-gray-300 dark:border-gray-800 flex flex-col justify-between items-center py-4 z-20">
-            <div class="flex flex-col space-y-4 items-center">
-                <button onclick="switchNavTab('chats')" id="nav-btn-chats" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Chats">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Chats</span>
-                </button>
-                <button onclick="switchNavTab('quick-replies')" id="nav-btn-quick-replies" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Quick Replies">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Quick Replies</span>
-                </button>
-                <button onclick="switchNavTab('greetings')" id="nav-btn-greetings" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Greeting Message">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Greeting Message</span>
-                </button>
-            </div>
-            <div class="flex flex-col space-y-4 items-center">
-                <button onclick="toggleDemoMode()" id="nav-btn-demo" class="p-3 rounded-xl text-amber-600 hover:bg-amber-100 dark:hover:bg-wa-darkhover transition relative group" title="Toggle Demo Mode">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Demo Mode</span>
-                </button>
-                <button onclick="openSettingsModal()" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Business Settings">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Settings</span>
-                </button>
-                <button onclick="toggleDarkMode()" class="p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-wa-darkhover transition relative group" title="Toggle Dark/Light Mode">
-                    <svg id="theme-icon-light" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <svg id="theme-icon-dark" class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                    <span class="absolute left-16 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">Toggle Theme</span>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Secondary Panel (Chat List or Management Views) -->
-        <div id="secondary-panel" class="w-full md:w-80 lg:w-96 flex-shrink-0 bg-white dark:bg-wa-darkpanel border-r border-gray-300 dark:border-gray-800 flex flex-col z-10">
-            <!-- Dynamic Secondary Content injected here -->
-        </div>
-
-        <!-- Main Workspace Area (Chat Conversation or Empty State) -->
-        <div id="main-workspace" class="flex-1 flex flex-col bg-gray-50 dark:bg-wa-darkchat relative h-full">
-            <!-- Dynamic Workspace Content injected here -->
-        </div>
-
-        <!-- Right Customer Info Panel (Toggleable) -->
-        <aside aria-label="Customer Information" id="info-panel" class="hidden lg:flex w-80 flex-shrink-0 bg-white dark:bg-wa-darkpanel border-l border-gray-300 dark:border-gray-800 flex-col z-10">
-            <!-- Dynamic Info Content injected here -->
-        </aside>
-
-    </div>
-
-    <!-- Modals Container -->
-    <div id="modal-container"></div>
-
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
-
-    <!-- Application Logic Script -->
-    <script>
-        /**
-         * WhatsApp Business Inbox - Single File Application
-         * Architecture: State-driven Vanilla JS with LocalStorage persistence & Meta Cloud API integration.
-         */
-
-        // --- Application State ---
-        const STORAGE_VERSION = 'v1.0';
-        const STORAGE_PREFIX = 'wa_bus_inbox_';
-
-        let state = {
-            activeNav: 'chats', // 'chats', 'quick-replies', 'greetings'
-            activeChatId: null,
-            filter: 'all', // 'all', 'unread', 'starred', 'archived'
-            searchQuery: '',
-            demoMode: false,
-            darkMode: false,
-            infoPanelOpen: true,
-            settings: {
-                phoneNumberId: '1392350110630223',
-                wabaId: '',
-                apiVersion: 'v17.0',
-                token: '' // Session only, not persisted
-            },
-            chats: [],
-            quickReplies: [
-                { id: 'qr_1', shortcut: '/hello', title: 'Welcome Greeting', body: 'Hello! Thank you for contacting us. How can we help you today?' },
-                { id: 'qr_2', shortcut: '/price', title: 'Pricing Inquiry', body: 'Thank you for your interest! Please tell us which product you would like to know more about.' },
-                { id: 'qr_3', shortcut: '/payment', title: 'Payment Reference', body: 'Thank you for contacting us. Please share your order or payment reference so we can assist you.' },
-                { id: 'qr_4', shortcut: '/thanks', title: 'Appreciation', body: 'Thank you for contacting us. We appreciate your support!' }
-            ],
-            greetings: {
-                enabled: false,
-                template: 'Hello {{name}}! Thanks for reaching out to us. How can we assist you today?'
-            }
-        };
-
-        // --- Initial Mock Data for Demo Mode ---
-        const DEMO_CHATS = [
-            {
-                id: 'demo_1',
-                name: 'Aarav Sharma',
-                phone: '919876543210',
-                isDemo: true,
-                unreadCount: 1,
-                isStarred: true,
-                isArchived: false,
-                labels: ['VIP Customer', 'Pending Order'],
-                notes: 'Interested in enterprise bulk pricing. Prefers communication via WhatsApp.',
-                messages: [
-                    { id: 'm1', direction: 'in', text: 'Hi, I need assistance with my recent software license order.', timestamp: Date.now() - 3600000 * 2, status: 'read' },
-                    { id: 'm2', direction: 'out', text: 'Hello Aarav! Thank you for contacting us. How can we help you today?', timestamp: Date.now() - 3600000, status: 'delivered', apiMsgId: 'wamid.demo1' },
-                    { id: 'm3', direction: 'in', text: 'Can you send me the invoice for transaction #9842?', timestamp: Date.now() - 1800000, status: 'read' }
-                ]
-            },
-            {
-                id: 'demo_2',
-                name: 'Priya Patel',
-                phone: '919123456789',
-                isDemo: true,
-                unreadCount: 0,
-                isStarred: false,
-                isArchived: false,
-                labels: ['New Lead'],
-                notes: 'Inquired about custom API integrations.',
-                messages: [
-                    { id: 'm4', direction: 'in', text: 'Hello, do you provide custom webhook integrations?', timestamp: Date.now() - 86400000, status: 'read' },
-                    { id: 'm5', direction: 'out', text: 'Thank you for your interest! Please tell us which product you would like to know more about.', timestamp: Date.now() - 85000000, status: 'read', apiMsgId: 'wamid.demo2' }
-                ]
-            }
-        ];
-
-        // --- Initialization ---
-        window.addEventListener('DOMContentLoaded', () => {
-            loadFromLocalStorage();
-            detectTheme();
-            render();
-            
-            // Check if default phone number id is prefilled in settings
-            if(!state.settings.phoneNumberId) {
-                state.settings.phoneNumberId = '1392350110630223';
-            }
-        });
-
-        // --- LocalStorage Management ---
-        function loadFromLocalStorage() {
-            try {
-                const savedChats = localStorage.getItem(STORAGE_PREFIX + 'chats');
-                const savedQR = localStorage.getItem(STORAGE_PREFIX + 'quick_replies');
-                const savedGreetings = localStorage.getItem(STORAGE_PREFIX + 'greetings');
-                const savedTheme = localStorage.getItem(STORAGE_PREFIX + 'dark_mode');
-
-                if (savedChats) state.chats = JSON.parse(savedChats);
-                if (savedQR) state.quickReplies = JSON.parse(savedQR);
-                if (savedGreetings) state.greetings = JSON.parse(savedGreetings);
-                if (savedTheme !== null) state.darkMode = JSON.parse(savedTheme);
-            } catch (e) {
-                console.error('Error loading from LocalStorage:', e);
-                showToast('Error loading saved data. Resetting to defaults.', 'error');
-            }
-        }
-
-        function saveToLocalStorage() {
-            try {
-                localStorage.setItem(STORAGE_PREFIX + 'chats', JSON.stringify(state.chats));
-                localStorage.setItem(STORAGE_PREFIX + 'quick_replies', JSON.stringify(state.quickReplies));
-                localStorage.setItem(STORAGE_PREFIX + 'greetings', JSON.stringify(state.greetings));
-                localStorage.setItem(STORAGE_PREFIX + 'dark_mode', JSON.stringify(state.darkMode));
-            } catch (e) {
-                console.error('Error saving to LocalStorage:', e);
-                showToast('Storage limit reached or unavailable.', 'error');
-            }
-        }
-
-        function exportData() {
-            const exportObj = {
-                version: STORAGE_VERSION,
-                timestamp: new Date().toISOString(),
-                chats: state.chats,
-                quickReplies: state.quickReplies,
-                greetings: state.greetings
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `wa_business_backup_${Date.now()}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            showToast('Backup exported successfully.', 'success');
-        }
-
-        function importData(event) {
-            const fileReader = new FileReader();
-            if (event.target.files[0]) {
-                fileReader.readAsText(event.target.files[0], "UTF-8");
-                fileReader.onload = (e) => {
-                    try {
-                        const parsed = JSON.parse(e.target.result);
-                        if (parsed.chats && Array.isArray(parsed.chats)) {
-                            state.chats = parsed.chats;
-                            if (parsed.quickReplies) state.quickReplies = parsed.quickReplies;
-                            if (parsed.greetings) state.greetings = parsed.greetings;
-                            saveToLocalStorage();
-                            render();
-                            showToast('Data imported successfully.', 'success');
-                        } else {
-                            throw new Error('Invalid backup file structure.');
-                        }
-                    } catch (err) {
-                        showToast('Failed to parse backup file.', 'error');
-                    }
-                };
-            }
-        }
-
-        // --- Theme Management ---
-        function detectTheme() {
-            if (state.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        function toggleDarkMode() {
-            state.darkMode = !state.darkMode;
-            detectTheme();
-            saveToLocalStorage();
-            render();
-        }
-
-        function toggleDemoMode() {
-            state.demoMode = !state.demoMode;
-            if (state.demoMode) {
-                // Merge demo chats if not present
-                DEMO_CHATS.forEach(dc => {
-                    if (!state.chats.some(c => c.id === dc.id)) {
-                        state.chats.unshift(dc);
-                    }
-                });
-                showToast('Demo Mode Enabled. Sample conversations loaded.', 'info');
-            } else {
-                state.chats = state.chats.filter(c => !c.isDemo);
-                showToast('Demo Mode Disabled.', 'info');
-            }
-            if (state.activeChatId && !state.chats.some(c => c.id === state.activeChatId)) {
-                state.activeChatId = state.chats.length > 0 ? state.chats[0].id : null;
-            }
-            render();
-        }
-
-        // --- Navigation Controller ---
-        function switchNavTab(tab) {
-            state.activeNav = tab;
-            renderSecondaryPanel();
-            updateNavUI();
-        }
-
-        function updateNavUI() {
-            ['chats', 'quick-replies', 'greetings'].forEach(tab => {
-                const btn = document.getElementById(`nav-btn-${tab}`);
-                if (btn) {
-                    if (state.activeNav === tab) {
-                        btn.classList.add('bg-gray-300', 'dark:bg-wa-darkhover', 'text-wa-light');
-                    } else {
-                        btn.classList.remove('bg-gray-300', 'dark:bg-wa-darkhover', 'text-wa-light');
-                    }
-                }
-            });
-        }
-
-        // --- Master Render Function ---
-        function render() {
-            updateNavUI();
-            renderSecondaryPanel();
-            renderMainWorkspace();
-            renderInfoPanel();
-        }
-
-        // --- Secondary Panel Renderer ---
-        function renderSecondaryPanel() {
-            const panel = document.getElementById('secondary-panel');
-            if (!panel) return;
-
-            if (state.activeNav === 'chats') {
-                panel.innerHTML = `
-                    <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex flex-col space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Chats</h1>
-                            <div clas
+<body>
+<div class="app" id="app">
+<nav class="rail" aria-label="Main navigation">
+  <div class="brand">W</div>
+  <button class="active" data-page="inbox" title="Inbox" aria-label="Inbox">☏</button>
+  <button data-page="dashboard" title="Dashboard" aria-label="Dashboard">▦</button>
+  <button data-page="contacts" title="Customers" aria-label="Customers">♙</button>
+  <button data-page="catalog" title="Catalog" aria-label="Catalog">▤</button>
+  <button data-page="quick" title="Quick replies" aria-label="Quick replies">⚡</button>
+  <button data-page="settings" title="Settings" aria-label="Settings">⚙</button>
+  <button class="bottom" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+</nav>
+<aside class="sidebar" id="sidebar">
+  <div class="sidehead"><h1>Inbox</h1><span class="pill" id="connectionPill">Checking…</span></div>
+  <div class="search"><input id="chatSearch" type="search" placeholder="Search chats or phone…" aria-label="Search chats"></div>
+  <div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="unread">Unread</button><button class="filter" data-filter="label">Labeled</button></div>
+  <div class="chatlist" id="chatList"><div class="empty">Loading conversations…</div></div>
+</aside>
+<main class="main" id="main">
+  <header class="topbar" id="topbar"><div class="who"><strong>WhatsApp Business Inbox</strong><small>Choose a chat to start replying</small></div><button class="btn ghost" data-page="settings">Settings</button></header>
+  <section class="content" id="content"><div class="empty"><div><div class="big">💬</div><h2>Your customer inbox</h2><p>Select a conversation on the left to view messages and reply.</p><p class="small">This interface connects to your own backend at <code>/api</code>.</p></div></div></section>
+  <form class="composer hidden" id="composer"><button type="button" class="btn ghost" id="quickBtn" title="Insert quick reply">⚡</button><textarea id="messageInput" rows="1" placeholder="Type a message…" aria-label="Message"></textarea><button class="btn primary" type="submit" id="sendBtn">Send ➤</button></form>
+</main>
+</div>
+<div id="toast" class="toast hidden" role="status"></div>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const state = {chats:[],activePhone:null,messages:[],page:'inbox',filter:'all',query:'',status:{},labels:load('wbi_labels',{}),quick:load('wbi_quick',[{shortcut:'/hello',text:'Hello! Thank you for contacting us. How can we help you?'},{shortcut:'/delivery',text:'Please share your location or PIN code so we can confirm delivery availability.'}]),products:load('wbi_products',[]),theme:load('wbi_theme','light'),poll:null};
+function load(k, fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fallback}catch{return fallback}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function phoneOf(c){return String(c.phone||c.id||'')}
+function displayName(c){return c.name && c.name!==phoneOf(c)?c.name:phoneOf(c)}
+function fmtTime(v){if(!v)return '';let d=new Date(v);return isNaN(d)?'':d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
+function toast(msg,error=false){const el=$('#toast');el.textContent=msg;el.classList.toggle('error',error);el.classList.remove('hidden');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.add('hidden'),3200)}
+async function api(url,opts={}){const r=await fetch(url,{...opts,headers:{'Content-Type':'application/json',...(opts.headers||{})}});let data={};try{data=await r.json()}catch{}if(!r.ok)throw new Error(data.error||`Request failed (${r.status})`);return data}
+function applyTheme(){document.documentElement.style.colorScheme=state.theme;document.body.style.background=state.theme==='dark'?'#111b21':'';document.body.style.color=state.theme==='dark'?'#e9edef':'';if(state.theme==='dark'){document.documentElement.style.setProperty('--bg','#111b21');document.documentElement.style.setProperty('--panel','#202c33');document.documentElement.style.setProperty('--text','#e9edef');document.documentElement.style.setProperty('--muted','#aebac1');document.documentElement.style.setProperty('--line','#34434b');document.documentElement.style.setProperty('--green2','#174f43')}else{document.documentElement.style.setProperty('--bg','#f3f6f8');document.documentElement.style.setProperty('--panel','#fff');document.documentElement.style.setProperty('--text','#17212b');document.documentElement.style.setProperty('--muted','#667781');document.documentElement.style.setProperty('--line','#e5e9ed');document.documentElement.style.setProperty('--green2','#d9fdd3')}save('wbi_theme',state.theme)}
+function labelOf(phone){return state.labels[phone]||''}
+function renderChats(){let chats=state.chats.filter(c=>{const p=phoneOf(c),q=state.query.toLowerCase();if(q&&!`${displayName(c)} ${p} ${c.lastMessage||''}`.toLowerCase().includes(q))return false;if(state.filter==='unread'&&!Number(c.unreadCount))return false;if(state.filter==='label'&&!labelOf(p))return false;return true});const el=$('#chatList');if(!chats.length){el.innerHTML='<div class="empty">No conversations found.<br><span class="small">Incoming messages appear after the webhook saves them.</span></div>';return}el.innerHTML=chats.map(c=>{const p=phoneOf(c),active=p===state.activePhone;return `<div class="chatrow ${active?'active':''}" data-phone="${esc(p)}"><div class="avatar">${esc(displayName(c).slice(0,1).toUpperCase()||'?')}</div><div class="chatmeta"><div class="chatline"><span class="chatname">${esc(displayName(c))}</span><span class="time">${esc(fmtTime(c.lastMessageAt))}</span></div><div class="preview">${labelOf(p)?`<span class="tag">${esc(labelOf(p))}</span> `:''}${esc(c.lastMessage||'No messages yet')}${Number(c.unreadCount)>0?` <span class="unread">${Number(c.unreadCount)}</span>`:''}</div></div></div>`}).join('')}
+async function refreshStatus(){try{state.status=await api('/api/status');const ok=state.status.whatsappConfigured;$('#connectionPill').textContent=ok?'API ready':'API not configured';$('#connectionPill').style.background=ok?'#e8f6f2':'#fff1d6';$('#connectionPill').style.color=ok?'#087f68':'#986300'}catch{$('#connectionPill').textContent='Server offline';$('#connectionPill').style.background='#ffe9e9';$('#connectionPill').style.color='#a21c1c'}}
+async function refreshChats(){try{const data=await api('/api/chats');state.chats=Array.isArray(data)?data:[];renderChats();if(state.activePhone){const c=state.chats.find(x=>phoneOf(x)===state.activePhone);if(c&&state.page==='inbox')updateChatHeader(c)}}catch(e){$('#chatList').innerHTML=`<div class="empty"><div><div class="big">⚠️</div><b>Could not load chats</b><p>${esc(e.message)}</p><p class="small">Check Render deployment and Firebase configuration.</p><button class="btn" onclick="location.reload()">Retry</button></div></div>`}}
+function updateChatHeader(c){$('#topbar').innerHTML=`<button class="btn ghost mobile-back" id="backBtn" aria-label="Back">←</button><div class="avatar">${esc(displayName(c).slice(0,1).toUpperCase())}</div><div class="who"><strong>${esc(displayName(c))}</strong><small>${esc(phoneOf(c))} · ${labelOf(phoneOf(c))?esc(labelOf(phoneOf(c))):'WhatsApp conversation'}</small></div><button class="btn ghost" id="labelBtn">🏷 Label</button><button class="btn ghost" id="markReadBtn">✓ Read</button>`;$('#backBtn')?.addEventListener('click',()=>$('#app').classList.remove('show-chat'));$('#labelBtn').addEventListener('click',editLabel);$('#markReadBtn').addEventListener('click',markRead)}
+async function openChat(phone){state.activePhone=phone;state.page='inbox';$('#app').classList.add('show-chat');$$('.rail [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==='inbox'));const c=state.chats.find(x=>phoneOf(x)===phone)||{phone,name:phone};updateChatHeader(c);$('#composer').classList.remove('hidden');$('#content').innerHTML='<div class="empty">Loading messages…</div>';renderChats();try{state.messages=await api(`/api/chats/${encodeURIComponent(phone)}/messages`);renderMessages();}catch(e){$('#content').innerHTML=`<div class="empty">Could not load messages: ${esc(e.message)}</div>`}try{await api(`/api/chats/${encodeURIComponent(phone)}/read`,{method:'POST',body:'{}'});const chat=state.chats.find(x=>phoneOf(x)===phone);if(chat)chat.unreadCount=0;renderChats()}catch{}}
+function renderMessages(){const el=$('#content');if(!state.messages.length){el.innerHTML='<div class="empty"><div><div class="big">👋</div><h3>Start the conversation</h3><p>No saved messages for this chat yet.</p></div></div>';return}el.innerHTML=`<div class="messages">${state.messages.map(m=>`<div class="bubble ${m.direction==='outgoing'?'out':'in'}">${esc(m.text||`[${m.type||'message'}]`)}<span class="stamp">${esc(fmtTime(m.timestamp))}${m.direction==='outgoing'?' · Sent':''}</span></div>`).join('')}</div>`;el.scrollTop=el.scrollHeight}
+function updateChatInMemory(phone,text,direction){let c=state.chats.find(x=>phoneOf(x)===phone);if(!c){c={id:phone,phone,name:phone,unreadCount:0};state.chats.unshift(c)}c.lastMessage=text;c.lastMessageAt=new Date().toISOString();if(direction==='incoming')c.unreadCount=(c.unreadCount||0)+1;renderChats()}
+$('#composer').addEventListener('submit',async e=>{e.preventDefault();const text=$('#messageInput').value.trim(),to=state.activePhone;if(!to||!text)return;const btn=$('#sendBtn');btn.disabled=true;btn.textContent='Sending…';try{const result=await api('/api/messages',{method:'POST',body:JSON.stringify({to,text})});$('#messageInput').value='';toast('Message accepted by WhatsApp API');await openChat(to);await refreshChats()}catch(err){toast(err.message,true)}finally{btn.disabled=false;btn.textContent='Send ➤'}});
+$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#composer').requestSubmit()}});
+$('#chatSearch').addEventListener('input',e=>{state.query=e.target.value.toLowerCase();renderChats()});
+$$('.filter').forEach(b=>b.addEventListener('click',()=>{state.filter=b.dataset.filter;$$('.filter').forEach(x=>x.classList.toggle('active',x===b));renderChats()}));
+$('#chatList').addEventListener('click',e=>{const row=e.target.closest('[data-phone]');if(row)openChat(row.dataset.phone)});
+$('#quickBtn').addEventListener('click',()=>{if(!state.quick.length){toast('Add quick replies in the Quick Replies page first');return}const menu=state.quick.map((q,i)=>`${i+1}. ${q.shortcut} — ${q.text}`).join('\n');const n=prompt('Choose quick reply number:\n'+menu);const q=state.quick[Number(n)-1];if(q){$('#messageInput').value=q.text;$('#messageInput').focus()}});
+async function markRead(){if(!state.activePhone)return;try{await api(`/api/chats/${encodeURIComponent(state.activePhone)}/read`,{method:'POST',body:'{}'});let c=state.chats.find(x=>phoneOf(x)===state.activePhone);if(c)c.unreadCount=0;renderChats();toast('Conversation marked as read')}catch(e){toast(e.message,true)}}
+function editLabel(){const p=state.activePhone;if(!p)return;const current=labelOf(p);const label=prompt('Label for this chat (leave blank to remove):\nExamples: New Customer, Order Received, Payment Pending, Completed',current);if(label===null)return;if(label.trim())state.labels[p]=label.trim();else delete state.labels[p];save('wbi_labels',state.labels);renderChats();const c=state.chats.find(x=>phoneOf(x)===p)||{phone:p,name:p};updateChatHeader(c);toast('Label saved in this browser')}
+function setPage(page){state.page=page;$('#app').classList.remove('show-chat');$('#composer').classList.add('hidden');$$('.rail [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));const content=$('#content');$('#topbar').innerHTML=`<div class="who"><strong>${({dashboard:'Dashboard',contacts:'Customers',catalog:'Product Catalog',quick:'Quick Replies',settings:'Settings'})[page]||'Inbox'}</strong><small>WhatsApp Business workspace</small></div><button class="btn ghost" id="refreshBtn">↻ Refresh</button>`;$('#refreshBtn').onclick=()=>{refreshStatus();refreshChats();if(page==='dashboard')renderPage('dashboard');else renderPage(page)};renderPage(page)}
+function renderPage(page){const content=$('#content');if(page==='dashboard'){const unread=state.chats.reduce((n,c)=>n+Number(c.unreadCount||0),0);content.innerHTML=`<div class="section-title"><h2>Business overview</h2><button class="btn primary" id="
