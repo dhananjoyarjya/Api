@@ -427,5 +427,4 @@ error: "Internal server error"
 // -------------------- START SERVER --------------------
 
 app.listen(PORT, () => {
-console.log("WhatsApp Inbox backend listening on port ${PORT}");
-});
+console.log(`WhatsApp Inbox backend listening on port ${PORT}`);
