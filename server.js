@@ -88,6 +88,7 @@ app.get("/webhook", (req, res) => {
 
 async function saveIncomingMessage(message, contact) {
   if (!db || !message || !message.from) {
+    console.warn("Skipping message save: Missing db, message, or sender.");
     return;
   }
 
@@ -162,37 +163,38 @@ async function saveIncomingMessage(message, contact) {
 
 // -------------------- RECEIVE WEBHOOK EVENTS --------------------
 
-app.post("/webhook", (req, res) => {
-  // Meta ko turant response do.
-  res.sendStatus(200);
+app.post("/webhook", async (req, res) => {
+  console.log("🔔 Webhook Received:", JSON.stringify(req.body, null, 2));
 
-  (async () => {
-    try {
-      const body = req.body;
+  try {
+    const body = req.body;
 
-      if (body?.object !== "whatsapp_business_account") {
-        return;
-      }
+    if (body?.object !== "whatsapp_business_account") {
+      return res.sendStatus(404);
+    }
 
-      for (const entry of body.entry || []) {
-        for (const change of entry.changes || []) {
-          const value = change.value || {};
-          const contacts = value.contacts || [];
-          const messages = value.messages || [];
+    for (const entry of body.entry || []) {
+      for (const change of entry.changes || []) {
+        const value = change.value || {};
+        const contacts = value.contacts || [];
+        const messages = value.messages || [];
 
-          for (const message of messages) {
-            const contact = contacts.find(
-              (item) => item.wa_id === message.from
-            );
+        for (const message of messages) {
+          const contact = contacts.find(
+            (item) => item.wa_id === message.from
+          );
 
-            await saveIncomingMessage(message, contact);
-          }
+          await saveIncomingMessage(message, contact);
+          console.log("✅ Message saved to Firebase successfully!");
         }
       }
-    } catch (error) {
-      console.error("Webhook processing failed:", error.message);
     }
-  })();
+
+    return res.sendStatus(200);
+  } catch (error) {
+    console.error("❌ Webhook processing failed:", error.message);
+    return res.sendStatus(500);
+  }
 });
 
 // -------------------- LIST CHATS --------------------
