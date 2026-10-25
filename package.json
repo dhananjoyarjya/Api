@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-business-inbox",
+  "version": "2.0.0",
+  "private": true,
+  "description": "WhatsApp Business Inbox with Firebase Firestore",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "firebase-admin": "^13.0.2"
+  }
+}
