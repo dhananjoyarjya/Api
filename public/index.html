@@ -1,72 +1,395 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#075e54">
-<title>WhatsApp Business Inbox</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b21">
+<title>ChatDesk Business Inbox</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 <style>
-:root{--bg:#f3f6f8;--panel:#fff;--text:#17212b;--muted:#667781;--line:#e5e9ed;--green:#087f68;--green2:#d9fdd3;--nav:#075e54;--shadow:0 8px 28px #14202b0d}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #20a890;outline-offset:2px}.app{min-height:100dvh;display:grid;grid-template-columns:72px 280px minmax(0,1fr);max-width:1800px;margin:auto;background:var(--panel);box-shadow:var(--shadow)}.rail{background:var(--nav);color:white;display:flex;flex-direction:column;align-items:center;padding:16px 8px;gap:12px}.brand{width:42px;height:42px;border-radius:14px;background:#fff;color:var(--nav);display:grid;place-items:center;font-size:23px;font-weight:800;margin-bottom:14px}.rail button{width:48px;height:46px;border-radius:13px;background:transparent;color:#d5eee8;font-size:20px}.rail button.active,.rail button:hover{background:#ffffff24;color:white}.rail .bottom{margin-top:auto}.sidebar{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column}.sidehead{padding:20px 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.sidehead h1{font-size:20px;margin:0}.pill{font-size:11px;border-radius:20px;padding:4px 8px;background:#e8f6f2;color:#087f68;font-weight:700}.search{padding:0 12px 12px}.search input{width:100%;border:1px solid var(--line);background:#f7f9fa;border-radius:12px;padding:11px 12px}.filters{display:flex;gap:6px;padding:0 12px 12px;overflow:auto}.filter{white-space:nowrap;padding:7px 10px;border-radius:20px;background:#f1f4f5;color:var(--muted);font-size:12px}.filter.active{background:#d8f3eb;color:#056653;font-weight:700}.chatlist{overflow:auto;flex:1}.chatrow{display:flex;gap:11px;padding:13px 12px;border-top:1px solid #f0f2f3;cursor:pointer}.chatrow:hover,.chatrow.active{background:#edf7f4}.avatar{width:42px;height:42px;border-radius:50%;background:#d6eee7;color:#086653;display:grid;place-items:center;font-weight:800;flex-shrink:0}.chatmeta{min-width:0;flex:1}.chatline{display:flex;justify-content:space-between;gap:8px}.chatname{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.time{font-size:11px;color:var(--muted);white-space:nowrap}.preview{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}.unread{background:#16a085;color:white;min-width:19px;height:19px;border-radius:20px;display:inline-grid;place-items:center;font-size:11px;padding:0 5px;margin-left:5px}.main{display:flex;min-width:0;min-height:100dvh;flex-direction:column;background:#f7f9fa}.topbar{height:72px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:12px}.topbar .who{min-width:0;flex:1}.topbar strong{display:block;font-size:15px}.topbar small{color:var(--muted)}.btn{border-radius:10px;padding:9px 12px;background:#edf2f3;color:#33434b;font-weight:650}.btn.primary{background:var(--green);color:white}.btn.ghost{background:transparent;border:1px solid var(--line)}.btn.danger{background:#fff0f0;color:#b42318}.content{padding:20px;overflow:auto;flex:1}.empty{height:100%;min-height:360px;display:grid;place-items:center;text-align:center;color:var(--muted);padding:30px}.empty .big{font-size:54px;margin-bottom:10px}.messages{display:flex;flex-direction:column;gap:10px;max-width:900px;margin:auto}.day{text-align:center;color:#65747b;font-size:11px;margin:8px auto;background:#fff;padding:5px 10px;border-radius:9px}.bubble{max-width:min(76%,620px);padding:10px 12px;border-radius:13px;background:white;box-shadow:0 1px 2px #0000000b;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.out{align-self:flex-end;background:var(--green2)}.bubble.in{align-self:flex-start}.bubble .stamp{display:block;text-align:right;color:#718078;font-size:10px;margin-top:5px}.composer{padding:12px 16px;background:white;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-end}.composer textarea{resize:none;min-height:44px;max-height:130px;flex:1;border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafb}.compose-tools{display:flex;gap:6px}.notice{padding:12px 14px;background:#fff8e6;border:1px solid #f6df9a;border-radius:12px;color:#73591b;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);min-width:0}.card h3{margin:0 0 8px;font-size:14px}.metric{font-size:28px;font-weight:800}.muted{color:var(--muted)}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.section-title h2{margin:0;font-size:22px}.stack{display:grid;gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:700;color:#50616a}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;color:var(--text)}.field textarea{min-height:90px;resize:vertical}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.quicklist,.label-list,.product-list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;background:white}.item .grow{flex:1;min-width:0}.item p{margin:3px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}.tag{font-size:11px;padding:4px 8px;border-radius:20px;background:#eaf5f2;color:#087f68}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#17212b;color:white;padding:11px 16px;border-radius:12px;z-index:99;box-shadow:var(--shadow);max-width:90vw}.toast.error{background:#9d2929}.mobile-back{display:none}.hidden{display:none!important}.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#1baa79;margin-right:6px}.status-dot.off{background:#dc8b24}.small{font-size:12px}.footer-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
-@media(max-width:900px){.app{grid-template-columns:58px 240px minmax(0,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:14px}.topbar{padding:0 12px}}
-@media(max-width:650px){.app{display:block;min-height:100dvh}.rail{position:fixed;z-index:10;left:0;right:0;bottom:0;height:60px;flex-direction:row;justify-content:space-around;padding:5px 8px;gap:2px}.brand{display:none}.rail button{height:46px;width:48px}.rail .bottom{margin:0}.sidebar{height:calc(100dvh - 60px);border:0}.main{display:none;height:calc(100dvh - 60px);min-height:0}.app.show-chat .sidebar{display:none}.app.show-chat .main{display:flex}.app.show-chat .rail{display:none}.mobile-back{display:inline-flex}.topbar{height:64px}.content{padding:12px}.grid{grid-template-columns:1fr 1fr;gap:8px}.card{padding:13px}.metric{font-size:23px}.formgrid{grid-template-columns:1fr}.bubble{max-width:88%}.composer{padding:9px}.composer .btn{padding:10px}.sidehead{padding-top:16px}}
+:root{
+ --bg:#101b21;--panel:#18262d;--panel2:#202f36;
+ --green:#00a884;--green2:#d9fdd3;--text:#e9edef;
+ --muted:#8696a0;--border:#293941;--white:#fff;
+ --red:#e35d6a;--radius:12px
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+input,textarea,select{width:100%;padding:12px;background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--green)}
+button.primary{background:var(--green);color:#062e26;border:0;padding:11px 15px;border-radius:8px;font-weight:bold}
+button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:10px 13px;border-radius:8px}
+button.danger{background:#48262b;color:#ffb9c0;border:0;padding:9px 12px;border-radius:8px}
+.hidden{display:none!important}
+.muted{color:var(--muted);font-size:12px;line-height:1.6}
+.field{margin-bottom:14px}
+label{display:block;margin-bottom:7px;font-size:13px;color:#b5c2c9}
+#authScreen{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(140deg,#102c2a,#101b21)}
+.auth-card{width:100%;max-width:390px;padding:28px;background:var(--panel);border:1px solid var(--border);border-radius:18px}
+.brand{text-align:center;font-size:25px;font-weight:bold;color:var(--green)}
+.auth-card h2{text-align:center;font-size:17px;font-weight:normal;margin:10px 0 25px}
+.auth-tabs{display:flex;gap:8px;margin-bottom:20px}
+.auth-tabs button{flex:1;background:var(--panel2);color:var(--text);border:0;border-radius:8px;padding:11px}
+.auth-tabs button.active{background:var(--green);color:#062e26;font-weight:bold}
+#authMessage{font-size:13px;padding:11px;border-radius:8px;margin-top:14px;overflow-wrap:anywhere}
+#app{height:100dvh;display:flex;flex-direction:column}
+.topbar{height:62px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--panel);border-bottom:1px solid var(--border)}
+.topbrand{font-size:20px;font-weight:bold;color:var(--green)}
+.topright{display:flex;align-items:center;gap:12px;font-size:12px}
+.workspace{display:flex;flex:1;min-height:0}
+.sidebar{width:76px;background:#0d171c;border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 7px;gap:8px}
+.navbtn{width:54px;min-height:54px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-size:21px}
+.navbtn span{display:block;font-size:10px;margin-top:4px}
+.navbtn.active,.navbtn:hover{background:#164a40;color:#4be1bd}
+.listpane{width:330px;max-width:36%;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--border);min-width:0}
+.listhead{padding:17px 15px 12px;border-bottom:1px solid var(--border)}
+.listhead h2{font-size:20px;margin:0 0 14px}
+.searchwrap{position:relative}
+.searchwrap input{padding-left:36px}
+.searchicon{position:absolute;left:12px;top:12px;color:var(--muted)}
+.filters{display:flex;gap:6px;overflow:auto;padding:10px}
+.filter{flex-shrink:0;background:var(--panel2);color:var(--muted);border:0;border-radius:7px;padding:7px 10px;font-size:11px}
+.filter.active{background:#174b40;color:#72edcd}
+.chatlist{overflow:auto;flex:1}
+.chatitem{display:flex;gap:11px;padding:13px;border-bottom:1px solid var(--border);cursor:pointer}
+.chatitem:hover,.chatitem.active{background:#263941}
+.avatar{width:43px;height:43px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;background:#244b45;color:#8bf0d3;font-weight:bold}
+.chatmeta{flex:1;min-width:0}
+.chatline{display:flex;justify-content:space-between;gap:8px}
+.chatline strong{font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.chatline small{font-size:10px;color:var(--muted)}
+.preview{font-size:12px;color:var(--muted);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unread{background:var(--green);color:#082c24;border-radius:20px;font-size:10px;padding:3px 6px}
+.chatpane{display:flex;flex:1;min-width:0;flex-direction:column;background:#0e1a20}
+.chathead{height:68px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+.chathead h3{font-size:15px;margin:0 0 5px}
+.chathead small{font-size:11px;color:var(--muted)}
+.chathead .person{flex:1;min-width:0}
+.chathead .person h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.messages{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:9px;background-color:#0c171c;background-image:radial-gradient(#23353b 1px,transparent 1px);background-size:18px 18px}
+.bubble{max-width:78%;padding:10px 12px;border-radius:10px;font-size:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.in{align-self:flex-start;background:#202e35;color:var(--text);border-top-left-radius:3px}
+.bubble.out{align-self:flex-end;background:#005c4b;color:#e9edef;border-top-right-radius:3px}
+.bubble small{display:block;text-align:right;margin-top:5px;font-size:10px;color:#b7c8c4}
+.composer{background:var(--panel);padding:12px;display:flex;gap:9px;align-items:flex-end;border-top:1px solid var(--border)}
+.composer textarea{min-height:44px;max-height:120px;resize:vertical}
+.plusbtn{width:44px;height:44px;flex-shrink:0;background:var(--panel2);color:var(--green);border:1px solid var(--border);border-radius:9px;font-size:23px}
+.rightpanel{width:270px;background:var(--panel);border-left:1px solid var(--border);padding:16px;overflow:auto}
+.rightpanel h3{font-size:15px;margin-top:0}
+.section{border-top:1px solid var(--border);margin-top:16px;padding-top:14px}
+.tag{display:inline-block;background:#24423d;color:#8debd2;padding:5px 8px;border-radius:6px;font-size:11px;margin:2px}
+.maincontent{flex:1;min-width:0;overflow:auto;padding:22px;background:#101b21}
+.card{background:var(--panel);border:1px solid var(--border);padding:18px;border-radius:var(--radius);margin-bottom:15px}
+.card h2{font-size:19px;margin:0 0 10px}
+.card h3{font-size:15px;margin:0 0 10px}
+.card p{line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.stat{padding:16px;background:var(--panel2);border-radius:10px}
+.stat strong{display:block;font-size:24px;color:var(--green);margin-top:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:0}
+.rowtext{min-width:0;overflow-wrap:anywhere}
+.rowactions{display:flex;gap:6px;flex-shrink:0}
+.smallbtn{padding:7px 9px!important;font-size:11px}
+.empty{margin:auto;text-align:center;max-width:330px;padding:24px;color:var(--muted);font-size:13px;line-height:1.7}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99;background:#263b40;color:white;padding:12px 16px;border-radius:9px;max-width:90%;font-size:13px;overflow-wrap:anywhere}
+#replyModal{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:20px;z-index:80}
+.modal{width:100%;max-width:450px;background:var(--panel);border:1px solid var(--border);padding:22px;border-radius:15px}
+.modal h3{margin-top:0}
+@media(max-width:1050px){.rightpanel{display:none}.listpane{width:300px}}
+@media(max-width:650px){
+ .topbar{height:55px;padding:0 10px}
+ .topbrand{font-size:17px}
+ .topright #userLabel{display:none}
+ .workspace{position:relative}
+ .sidebar{width:58px;padding:8px 3px}
+ .navbtn{width:48px;min-height:48px;font-size:18px}
+ .navbtn span{font-size:9px}
+ .listpane{width:calc(100% - 58px);max-width:none}
+ .chatpane{display:none;position:absolute;inset:0;z-index:5}
+ .workspace.chat-open .sidebar,.workspace.chat-open .listpane{display:none}
+ .workspace.chat-open .chatpane{display:flex}
+ .workspace.page-open .sidebar{display:none}
+ .workspace.page-open .listpane,.workspace.page-open .chatpane{display:none}
+ .workspace.page-open .maincontent{display:block}
+ .maincontent{display:none;position:absolute;inset:0;z-index:6;padding:13px;overflow:auto}
+ .workspace.page-open .maincontent{display:block}
+ .mobileback{display:inline-block!important}
+ .chathead{height:60px;padding:8px}
+ .messages{padding:12px}
+ .bubble{max-width:88%}
+ .composer{padding:8px}
+ .grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<div class="app" id="app">
-<nav class="rail" aria-label="Main navigation">
-  <div class="brand">W</div>
-  <button class="active" data-page="inbox" title="Inbox" aria-label="Inbox">☏</button>
-  <button data-page="dashboard" title="Dashboard" aria-label="Dashboard">▦</button>
-  <button data-page="contacts" title="Customers" aria-label="Customers">♙</button>
-  <button data-page="catalog" title="Catalog" aria-label="Catalog">▤</button>
-  <button data-page="quick" title="Quick replies" aria-label="Quick replies">⚡</button>
-  <button data-page="settings" title="Settings" aria-label="Settings">⚙</button>
-  <button class="bottom" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
-</nav>
-<aside class="sidebar" id="sidebar">
-  <div class="sidehead"><h1>Inbox</h1><span class="pill" id="connectionPill">Checking…</span></div>
-  <div class="search"><input id="chatSearch" type="search" placeholder="Search chats or phone…" aria-label="Search chats"></div>
-  <div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="unread">Unread</button><button class="filter" data-filter="label">Labeled</button></div>
-  <div class="chatlist" id="chatList"><div class="empty">Loading conversations…</div></div>
-</aside>
-<main class="main" id="main">
-  <header class="topbar" id="topbar"><div class="who"><strong>WhatsApp Business Inbox</strong><small>Choose a chat to start replying</small></div><button class="btn ghost" data-page="settings">Settings</button></header>
-  <section class="content" id="content"><div class="empty"><div><div class="big">💬</div><h2>Your customer inbox</h2><p>Select a conversation on the left to view messages and reply.</p><p class="small">This interface connects to your own backend at <code>/api</code>.</p></div></div></section>
-  <form class="composer hidden" id="composer"><button type="button" class="btn ghost" id="quickBtn" title="Insert quick reply">⚡</button><textarea id="messageInput" rows="1" placeholder="Type a message…" aria-label="Message"></textarea><button class="btn primary" type="submit" id="sendBtn">Send ➤</button></form>
-</main>
+
+<section id="authScreen">
+ <div class="auth-card">
+  <div class="brand">● ChatDesk</div>
+  <h2>Business Inbox</h2>
+  <div class="auth-tabs">
+   <button id="loginTab" class="active" type="button">Login</button>
+   <button id="signupTab" type="button">Create Account</button>
+  </div>
+  <form id="authForm">
+   <div class="field hidden" id="nameField">
+    <label for="name">Your name</label><input id="name" autocomplete="name">
+   </div>
+   <div class="field">
+    <label for="email">Email</label><input id="email" type="email" required autocomplete="email">
+   </div>
+   <div class="field">
+    <label for="password">Password</label><input id="password" type="password" minlength="6" required autocomplete="current-password">
+   </div>
+   <button class="primary" id="authButton" style="width:100%" type="submit">Login</button>
+  </form>
+  <button id="forgotButton" class="secondary" style="width:100%;margin-top:10px" type="button">Forgot Password?</button>
+  <div id="authMessage" class="hidden" role="status"></div>
+  <p class="muted">Firebase authentication is required to open your workspace.</p>
+ </div>
+</section>
+
+<section id="app" class="hidden">
+ <header class="topbar">
+  <div class="topbrand">● ChatDesk</div>
+  <div class="topright"><span id="userLabel"></span><button class="secondary" id="logoutButton">Logout</button></div>
+ </header>
+
+ <div class="workspace" id="workspace">
+  <nav class="sidebar">
+   <button class="navbtn active" data-page="inbox" title="Inbox">💬<span>Inbox</span></button>
+   <button class="navbtn" data-page="contacts" title="Contacts">👥<span>Contacts</span></button>
+   <button class="navbtn" data-page="quick" title="Quick replies">⚡<span>Replies</span></button>
+   <button class="navbtn" data-page="connect" title="Connect WhatsApp">🔗<span>Connect</span></button>
+   <button class="navbtn" data-page="settings" title="Settings">⚙️<span>Settings</span></button>
+  </nav>
+
+  <aside class="listpane" id="listpane">
+   <div class="listhead">
+    <h2 id="listTitle">Inbox</h2>
+    <div class="searchwrap"><span class="searchicon">⌕</span><input id="chatSearch" placeholder="Search chats..."></div>
+   </div>
+   <div class="filters">
+    <button class="filter active" data-filter="all">All</button>
+    <button class="filter" data-filter="unread">Unread</button>
+    <button class="filter" data-filter="open">Open</button>
+    <button class="filter" data-filter="resolved">Resolved</button>
+   </div>
+   <div class="chatlist" id="chatlist"><div class="empty">Sign in to load your inbox.</div></div>
+  </aside>
+
+  <main class="chatpane">
+   <div class="chathead">
+    <button class="secondary mobileback" id="backButton" style="display:none" type="button">←</button>
+    <div class="avatar" id="chatAvatar">?</div>
+    <div class="person"><h3 id="chatName">Select a conversation</h3><small id="chatPhone">Customer messages</small></div>
+    <button class="secondary smallbtn" id="resolveButton" disabled>Resolve</button>
+   </div>
+   <div class="messages" id="messages"><div class="empty">Select a customer to view messages.</div></div>
+   <form class="composer" id="composer">
+    <button class="plusbtn" type="button" id="composerPlus" title="Quick replies and attachments">+</button>
+    <textarea id="messageInput" rows="1" placeholder="Type a message... Type / for quick replies" disabled></textarea>
+    <button class="primary" id="sendButton" type="submit" disabled>Send</button>
+   </form>
+  </main>
+
+  <aside class="rightpanel" id="rightpanel">
+   <h3>Customer details</h3>
+   <div id="customerDetails" class="empty">Select a conversation.</div>
+  </aside>
+
+  <main class="maincontent" id="maincontent"></main>
+ </div>
+</section>
+
+<div id="replyModal" class="hidden">
+ <div class="modal">
+  <h3 id="modalTitle">Add Quick Reply</h3>
+  <form id="replyForm">
+   <input id="replyId" type="hidden">
+   <div class="field"><label for="replyShortcut">Shortcut (example: welcome)</label><input id="replyShortcut" required maxlength="40"></div>
+   <div class="field"><label for="replyTitle">Title</label><input id="replyTitle" required maxlength="80"></div>
+   <div class="field"><label for="replyText">Reply text</label><textarea id="replyText" required rows="5" maxlength="4000"></textarea></div>
+   <button class="primary" type="submit">Save Reply</button>
+   <button class="secondary" id="closeModal" type="button">Cancel</button>
+  </form>
+ </div>
 </div>
-<div id="toast" class="toast hidden" role="status"></div>
+
+<div id="toast" class="toast hidden"></div>
+
 <script>
-(() => {
-'use strict';
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const state = {chats:[],activePhone:null,messages:[],page:'inbox',filter:'all',query:'',status:{},labels:load('wbi_labels',{}),quick:load('wbi_quick',[{shortcut:'/hello',text:'Hello! Thank you for contacting us. How can we help you?'},{shortcut:'/delivery',text:'Please share your location or PIN code so we can confirm delivery availability.'}]),products:load('wbi_products',[]),theme:load('wbi_theme','light'),poll:null};
-function load(k, fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fallback}catch{return fallback}}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function phoneOf(c){return String(c.phone||c.id||'')}
-function displayName(c){return c.name && c.name!==phoneOf(c)?c.name:phoneOf(c)}
-function fmtTime(v){if(!v)return '';let d=new Date(v);return isNaN(d)?'':d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-function toast(msg,error=false){const el=$('#toast');el.textContent=msg;el.classList.toggle('error',error);el.classList.remove('hidden');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.add('hidden'),3200)}
-async function api(url,opts={}){const r=await fetch(url,{...opts,headers:{'Content-Type':'application/json',...(opts.headers||{})}});let data={};try{data=await r.json()}catch{}if(!r.ok)throw new Error(data.error||`Request failed (${r.status})`);return data}
-function applyTheme(){document.documentElement.style.colorScheme=state.theme;document.body.style.background=state.theme==='dark'?'#111b21':'';document.body.style.color=state.theme==='dark'?'#e9edef':'';if(state.theme==='dark'){document.documentElement.style.setProperty('--bg','#111b21');document.documentElement.style.setProperty('--panel','#202c33');document.documentElement.style.setProperty('--text','#e9edef');document.documentElement.style.setProperty('--muted','#aebac1');document.documentElement.style.setProperty('--line','#34434b');document.documentElement.style.setProperty('--green2','#174f43')}else{document.documentElement.style.setProperty('--bg','#f3f6f8');document.documentElement.style.setProperty('--panel','#fff');document.documentElement.style.setProperty('--text','#17212b');document.documentElement.style.setProperty('--muted','#667781');document.documentElement.style.setProperty('--line','#e5e9ed');document.documentElement.style.setProperty('--green2','#d9fdd3')}save('wbi_theme',state.theme)}
-function labelOf(phone){return state.labels[phone]||''}
-function renderChats(){let chats=state.chats.filter(c=>{const p=phoneOf(c),q=state.query.toLowerCase();if(q&&!`${displayName(c)} ${p} ${c.lastMessage||''}`.toLowerCase().includes(q))return false;if(state.filter==='unread'&&!Number(c.unreadCount))return false;if(state.filter==='label'&&!labelOf(p))return false;return true});const el=$('#chatList');if(!chats.length){el.innerHTML='<div class="empty">No conversations found.<br><span class="small">Incoming messages appear after the webhook saves them.</span></div>';return}el.innerHTML=chats.map(c=>{const p=phoneOf(c),active=p===state.activePhone;return `<div class="chatrow ${active?'active':''}" data-phone="${esc(p)}"><div class="avatar">${esc(displayName(c).slice(0,1).toUpperCase()||'?')}</div><div class="chatmeta"><div class="chatline"><span class="chatname">${esc(displayName(c))}</span><span class="time">${esc(fmtTime(c.lastMessageAt))}</span></div><div class="preview">${labelOf(p)?`<span class="tag">${esc(labelOf(p))}</span> `:''}${esc(c.lastMessage||'No messages yet')}${Number(c.unreadCount)>0?` <span class="unread">${Number(c.unreadCount)}</span>`:''}</div></div></div>`}).join('')}
-async function refreshStatus(){try{state.status=await api('/api/status');const ok=state.status.whatsappConfigured;$('#connectionPill').textContent=ok?'API ready':'API not configured';$('#connectionPill').style.background=ok?'#e8f6f2':'#fff1d6';$('#connectionPill').style.color=ok?'#087f68':'#986300'}catch{$('#connectionPill').textContent='Server offline';$('#connectionPill').style.background='#ffe9e9';$('#connectionPill').style.color='#a21c1c'}}
-async function refreshChats(){try{const data=await api('/api/chats');state.chats=Array.isArray(data)?data:[];renderChats();if(state.activePhone){const c=state.chats.find(x=>phoneOf(x)===state.activePhone);if(c&&state.page==='inbox')updateChatHeader(c)}}catch(e){$('#chatList').innerHTML=`<div class="empty"><div><div class="big">⚠️</div><b>Could not load chats</b><p>${esc(e.message)}</p><p class="small">Check Render deployment and Firebase configuration.</p><button class="btn" onclick="location.reload()">Retry</button></div></div>`}}
-function updateChatHeader(c){$('#topbar').innerHTML=`<button class="btn ghost mobile-back" id="backBtn" aria-label="Back">←</button><div class="avatar">${esc(displayName(c).slice(0,1).toUpperCase())}</div><div class="who"><strong>${esc(displayName(c))}</strong><small>${esc(phoneOf(c))} · ${labelOf(phoneOf(c))?esc(labelOf(phoneOf(c))):'WhatsApp conversation'}</small></div><button class="btn ghost" id="labelBtn">🏷 Label</button><button class="btn ghost" id="markReadBtn">✓ Read</button>`;$('#backBtn')?.addEventListener('click',()=>$('#app').classList.remove('show-chat'));$('#labelBtn').addEventListener('click',editLabel);$('#markReadBtn').addEventListener('click',markRead)}
-async function openChat(phone){state.activePhone=phone;state.page='inbox';$('#app').classList.add('show-chat');$$('.rail [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page==='inbox'));const c=state.chats.find(x=>phoneOf(x)===phone)||{phone,name:phone};updateChatHeader(c);$('#composer').classList.remove('hidden');$('#content').innerHTML='<div class="empty">Loading messages…</div>';renderChats();try{state.messages=await api(`/api/chats/${encodeURIComponent(phone)}/messages`);renderMessages();}catch(e){$('#content').innerHTML=`<div class="empty">Could not load messages: ${esc(e.message)}</div>`}try{await api(`/api/chats/${encodeURIComponent(phone)}/read`,{method:'POST',body:'{}'});const chat=state.chats.find(x=>phoneOf(x)===phone);if(chat)chat.unreadCount=0;renderChats()}catch{}}
-function renderMessages(){const el=$('#content');if(!state.messages.length){el.innerHTML='<div class="empty"><div><div class="big">👋</div><h3>Start the conversation</h3><p>No saved messages for this chat yet.</p></div></div>';return}el.innerHTML=`<div class="messages">${state.messages.map(m=>`<div class="bubble ${m.direction==='outgoing'?'out':'in'}">${esc(m.text||`[${m.type||'message'}]`)}<span class="stamp">${esc(fmtTime(m.timestamp))}${m.direction==='outgoing'?' · Sent':''}</span></div>`).join('')}</div>`;el.scrollTop=el.scrollHeight}
-function updateChatInMemory(phone,text,direction){let c=state.chats.find(x=>phoneOf(x)===phone);if(!c){c={id:phone,phone,name:phone,unreadCount:0};state.chats.unshift(c)}c.lastMessage=text;c.lastMessageAt=new Date().toISOString();if(direction==='incoming')c.unreadCount=(c.unreadCount||0)+1;renderChats()}
-$('#composer').addEventListener('submit',async e=>{e.preventDefault();const text=$('#messageInput').value.trim(),to=state.activePhone;if(!to||!text)return;const btn=$('#sendBtn');btn.disabled=true;btn.textContent='Sending…';try{const result=await api('/api/messages',{method:'POST',body:JSON.stringify({to,text})});$('#messageInput').value='';toast('Message accepted by WhatsApp API');await openChat(to);await refreshChats()}catch(err){toast(err.message,true)}finally{btn.disabled=false;btn.textContent='Send ➤'}});
-$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#composer').requestSubmit()}});
-$('#chatSearch').addEventListener('input',e=>{state.query=e.target.value.toLowerCase();renderChats()});
-$$('.filter').forEach(b=>b.addEventListener('click',()=>{state.filter=b.dataset.filter;$$('.filter').forEach(x=>x.classList.toggle('active',x===b));renderChats()}));
-$('#chatList').addEventListener('click',e=>{const row=e.target.closest('[data-phone]');if(row)openChat(row.dataset.phone)});
-$('#quickBtn').addEventListener('click',()=>{if(!state.quick.length){toast('Add quick replies in the Quick Replies page first');return}const menu=state.quick.map((q,i)=>`${i+1}. ${q.shortcut} — ${q.text}`).join('\n');const n=prompt('Choose quick reply number:\n'+menu);const q=state.quick[Number(n)-1];if(q){$('#messageInput').value=q.text;$('#messageInput').focus()}});
-async function markRead(){if(!state.activePhone)return;try{await api(`/api/chats/${encodeURIComponent(state.activePhone)}/read`,{method:'POST',body:'{}'});let c=state.chats.find(x=>phoneOf(x)===state.activePhone);if(c)c.unreadCount=0;renderChats();toast('Conversation marked as read')}catch(e){toast(e.message,true)}}
-function editLabel(){const p=state.activePhone;if(!p)return;const current=labelOf(p);const label=prompt('Label for this chat (leave blank to remove):\nExamples: New Customer, Order Received, Payment Pending, Completed',current);if(label===null)return;if(label.trim())state.labels[p]=label.trim();else delete state.labels[p];save('wbi_labels',state.labels);renderChats();const c=state.chats.find(x=>phoneOf(x)===p)||{phone:p,name:p};updateChatHeader(c);toast('Label saved in this browser')}
-function setPage(page){state.page=page;$('#app').classList.remove('show-chat');$('#composer').classList.add('hidden');$$('.rail [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));const content=$('#content');$('#topbar').innerHTML=`<div class="who"><strong>${({dashboard:'Dashboard',contacts:'Customers',catalog:'Product Catalog',quick:'Quick Replies',settings:'Settings'})[page]||'Inbox'}</strong><small>WhatsApp Business workspace</small></div><button class="btn ghost" id="refreshBtn">↻ Refresh</button>`;$('#refreshBtn').onclick=()=>{refreshStatus();refreshChats();if(page==='dashboard')renderPage('dashboard');else renderPage(page)};renderPage(page)}
-function renderPage(page){const content=$('#content');if(page==='dashboard'){const unread=state.chats.reduce((n,c)=>n+Number(c.unreadCount||0),0);content.innerHTML=`<div class="section-title"><h2>Business overview</h2><button class="btn primary" id="
+(function(){
+"use strict";
+
+/* Firebase Web App configuration */
+const firebaseConfig = {
+  apiKey: "AIzaSyBt9RbrS_9Rmk9xoFcdQUaxRaQMK9C63RA",
+  authDomain: "whatsapp-business-inbox.firebaseapp.com",
+  projectId: "whatsapp-business-inbox",
+  storageBucket: "whatsapp-business-inbox.firebasestorage.app",
+  messagingSenderId: "63217125375",
+  appId: "1:63217125375:web:0a5db6498a0cd6d5abc9ca",
+  measurementId: "G-6VYST8116K"
+};
+
+/*
+  Put your deployed backend origin here.
+  Example: https://your-service.onrender.com
+  Never put Meta access tokens in this file.
+*/
+const API_BASE_URL = "";
+
+const $=id=>document.getElementById(id);
+const state={
+ user:null,businessId:null,role:null,mode:"login",page:"inbox",
+ filter:"all",chats:[],contacts:[],replies:[],selected:null,messages:[],
+ unsubChats:null,unsubMessages:null,unsubContacts:null,unsubReplies:null
+};
+let auth,db;
+
+function esc(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function toast(message){
+ $("toast").textContent=message;
+ $("toast").classList.remove("hidden");
+ clearTimeout(toast.timer);
+ toast.timer=setTimeout(()=>$("toast").classList.add("hidden"),3500);
+}
+function authMessage(message,success=false){
+ $("authMessage").textContent=message;
+ $("authMessage").classList.remove("hidden");
+ $("authMessage").style.background=success?"#164236":"#48262b";
+ $("authMessage").style.color=success?"#9ef0cf":"#ffc1c8";
+}
+function switchAuthMode(mode){
+ state.mode=mode;
+ const signup=mode==="signup";
+ $("loginTab").classList.toggle("active",!signup);
+ $("signupTab").classList.toggle("active",signup);
+ $("nameField").classList.toggle("hidden",!signup);
+ $("name").required=signup;
+ $("authButton").textContent=signup?"Create Account":"Login";
+ $("forgotButton").classList.toggle("hidden",signup);
+ $("authMessage").classList.add("hidden");
+}
+$("loginTab").onclick=()=>switchAuthMode("login");
+$("signupTab").onclick=()=>switchAuthMode("signup");
+
+function authError(error){
+ const errors={
+ "auth/invalid-email":"Enter a valid email address.",
+ "auth/email-already-in-use":"Email already exists. Please login.",
+ "auth/weak-password":"Password must have at least 6 characters.",
+ "auth/invalid-credential":"Incorrect email or password.",
+ "auth/user-not-found":"Account not found. Create an account first.",
+ "auth/wrong-password":"Incorrect password.",
+ "auth/operation-not-allowed":"Enable Email/Password in Firebase Authentication.",
+ "auth/network-request-failed":"Network error. Check your internet connection."
+ };
+ return errors[error.code]||error.message||"Authentication failed.";
+}
+$("authForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const button=$("authButton");
+ button.disabled=true;
+ button.textContent="Please wait...";
+ try{
+  const email=$("email").value.trim();
+  const password=$("password").value;
+  if(state.mode==="signup"){
+   const result=await auth.createUserWithEmailAndPassword(email,password);
+   const name=$("name").value.trim();
+   if(name)await result.user.updateProfile({displayName:name});
+   authMessage("Account created successfully.",true);
+  }else{
+   await auth.signInWithEmailAndPassword(email,password);
+  }
+ }catch(error){authMessage(authError(error));}
+ finally{
+  button.disabled=false;
+  button.textContent=state.mode==="signup"?"Create Account":"Login";
+ }
+});
+$("forgotButton").onclick=async()=>{
+ const email=$("email").value.trim();
+ if(!email){authMessage("Enter your email first.");return;}
+ try{await auth.sendPasswordResetEmail(email);authMessage("Password reset email sent.",true);}
+ catch(error){authMessage(authError(error));}
+};
+$("logoutButton").onclick=()=>auth.signOut();
+
+function cleanup(){
+ ["unsubChats","unsubMessages","unsubContacts","unsubReplies"].forEach(k=>{
+  if(typeof state[k]==="function"){state[k]();state[k]=null;}
+ });
+}
+function showLogin(){
+ cleanup();
+ $("app").classList.add("hidden");
+ $("authScreen").classList.remove("hidden");
+}
+function showApp(user){
+ $("authScreen").classList.add("hidden");
+ $("app").classList.remove("hidden");
+ $("userLabel").textContent=user.email||"";
+}
+async function api(path,options={}){
+ if(!state.user)throw new Error("Please sign in.");
+ if(!API_BASE_URL)throw new Error("Backend URL is not configured. Set API_BASE_URL in this HTML.");
+ const token=await state.user.getIdToken();
+ const response=await fetch(API_BASE_URL.replace(/\/$/,"")+path,{
+  ...options,
+  headers:{"Content-Type":"application/json","Authorization":"Bearer "+token,...(options.headers||{})}
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||data.message||"HTTP "+response.status);
+ return data;
+}
+async function initializeWorkspace(){
+ try{
+  const result=await api("/api/me");
+  if(!result.businessId)throw new Error("No business workspace assigned to this user.");
+  state.businessId=result.businessId;
+  state.role=result.role||"member";
+  startListeners();
+ }catch(error){
+  $("chatlist").innerHTML='<div class="empty"><b>Backend not connected</b><br>'+esc(error.message)+'<br><br>Open Connect to configure WhatsApp API status and setup.</div>';
+ }
+}
+function startListeners(){
+ cleanup();
+ const root=db.collection("businesses").doc(state.businessId);
+ state.unsubChats=root.collection("conversations").orderBy("updatedAt","desc").limit(200).onSnapshot(s=>{
+  state.chats=s.docs.map(d=>({id:d.id,...d.data()}));
+  renderChats();
+ },e=>{$("chatlist").innerHTML='<div class="empty">Firestore error: '+esc(e.message)+'</div>';});
+ state.unsubContacts=root.collection("contacts").orderBy("updatedAt","desc").limit(500).onSnapshot(s=>{
+  state.contacts=s.docs.map(d=>({id:d.id,...d.data()}));
+  if(state.page==="contacts")renderPage();
+ },()=>{});
+ state.unsubReplies=root.collection("quickReplies").orderBy("shortcut").limit(300).onSnapshot(s=>{
+  state.replies=s.docs.map(d=>({id:d.id,...d.data()}));
+  if(state.page==="quick")renderPage();
+ },()=>{});
+}
+function initials(name){return String(name||"C").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();}
+function timeText(value){
+ try{const d=value?.toDate?value.toDate():new Date(value);return isNaN(d.getTime())?"":d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});}catch(e){return "";}
+}
+function filteredChats(){
+ const q=$("chatSearch").value.toLowerCase();
+ return state.chats.filter(c=>{
+  const status=(c.status||"open").toLowerCase();
+  const str=`${c.contactName||c.name||""} ${c.phoneNumber||c.waId||""} ${c.lastMessagePreview||""}`.toLowerCase();
+  if(!str.includes(q))return false;
+  if(state.filter==="unread"&&!Number(c.unreadC
